@@ -13,7 +13,7 @@ def obtener_datos_json(request):
     except (KeyError, TypeError, ValueError, SystemError, RuntimeError):
         return ""
 
-def armar_response_list_content(lista):
+def armar_response_list_content(lista, *mensaje):
     response_dictionary = {}
 
     if lista is not None and not len(lista) == 0:
@@ -24,9 +24,48 @@ def armar_response_list_content(lista):
             response_error_dictionary = {KEY_RESULTADO_OPERACION: False, KEY_DETALLE_OPERACION: DETALLE_ERROR_SISTEMA}
             return dumps(response_error_dictionary, cls=DjangoJSONEncoder)
 
+        if mensaje and len(mensaje) >= 1:
+            response_dictionary[KEY_DETALLE_OPERACION] = mensaje[0]
+        response_dictionary[KEY_RESULTADO_OPERACION] = True
+
+    else:
+        if mensaje and len(mensaje) >= 1:
+            response_dictionary[KEY_DETALLE_OPERACION] = mensaje[0]
+        else:
+            response_dictionary[KEY_DETALLE_OPERACION] = DETALLE_OPERACION_VACIA
+        response_dictionary[KEY_RESULTADO_OPERACION] = True
+
     try:
         return dumps(response_dictionary, cls=DjangoJSONEncoder)
     except (KeyError, TypeError, ValueError, SystemError, RuntimeError):
         response_error_dictionary = {KEY_RESULTADO_OPERACION: False, KEY_DETALLE_OPERACION: DETALLE_ERROR_SISTEMA}
         return dumps(response_error_dictionary, cls=DjangoJSONEncoder)
 
+
+
+def armar_response_content(objeto, *mensaje):
+    response_dictionary = {}
+
+    if objeto is not None:
+        try:
+            response_dictionary[KEY_DATOS_OPERACION] = objeto.as_json()
+        except (KeyError, TypeError, ValueError, SystemError, RuntimeError):
+            response_error_dictionary = {KEY_RESULTADO_OPERACION: False, KEY_DETALLE_OPERACION: DETALLE_ERROR_SISTEMA}
+            return dumps(response_error_dictionary, cls=DjangoJSONEncoder)
+
+        if mensaje and len(mensaje) >= 1:
+            response_dictionary[KEY_DETALLE_OPERACION] = mensaje[0]
+        response_dictionary[KEY_RESULTADO_OPERACION] = True
+
+    else:
+        if mensaje and len(mensaje) >= 1:
+            response_dictionary[KEY_DETALLE_OPERACION] = mensaje[0]
+        else:
+            response_dictionary[KEY_DETALLE_OPERACION] = DETALLE_OPERACION_VACIA
+        response_dictionary[KEY_RESULTADO_OPERACION] = True
+
+    try:
+        return dumps(response_dictionary, cls=DjangoJSONEncoder)
+    except (KeyError, TypeError, ValueError, SystemError, RuntimeError):
+        response_error_dictionary = {KEY_RESULTADO_OPERACION: False, KEY_DETALLE_OPERACION: DETALLE_ERROR_SISTEMA}
+        return dumps(response_error_dictionary, cls=DjangoJSONEncoder)

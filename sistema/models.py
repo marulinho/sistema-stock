@@ -49,9 +49,9 @@ class Usuario(models.Model):
             apellido = self.apellido,
             usuario = self.usuario,
             fecha_desde = self.fecha_desde,
-            fecha_hasta = self.hecha_hasta,
-            estado = self.estado,
-            pregunta = self.pregunta
+            fecha_hasta = self.fecha_hasta,
+            estado = self.estado.nombre,
+            pregunta = self.pregunta.descripcion
         )
 
 class SesionUsuario(models.Model):
@@ -60,7 +60,6 @@ class SesionUsuario(models.Model):
     fecha_hasta = models.DateTimeField(null=True)
 
 class RespuestaPregunta(models.Model):
-    id_respuesta_pregunta = models.IntegerField(primary_key=True, default=1, editable=False)
     descripcion = models.CharField(max_length=50)
 
     usuario = models.ForeignKey(Usuario,db_column='id_usuario')

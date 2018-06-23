@@ -10,7 +10,7 @@ from sistema.utils.decorators import *
 from sistema.utils.error_handler import *
 
 @transaction.atomic()
-@metodos_requeridos([METHOD_GET])
+@metodos_requeridos([METODO_GET])
 def buscar_preguntas(request):
 
     response = HttpResponse()

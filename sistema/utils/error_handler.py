@@ -3,19 +3,34 @@ from json import dumps
 
 from django.core.serializers.json import DjangoJSONEncoder
 
+#Error llamada api call
 ERROR_METODO_INCORRECTO = 'ERROR_METODO_INCORRECTO'
 
+#Error datos incompletos al hacer el api call
 ERROR_DATOS_INCORRECTOS = 'ERROR_DATOS_INCORRECTOS'
 ERROR_DATOS_FALTANTES = 'ERROR_DATOS_FALTANTES'
 DETALLE_ERROR_DATOS_INCOMPLETOS = "Faltan ingresar datos"
 
-ERROR_DE_SISTEMA = 'ERROR_DE_SISTEMA'
+ERROR_DE_SISTEMA = 'Error de sistema'
 DETALLE_ERROR_SISTEMA = "Error procesando llamada"
-
 
 KEY_ERROR_CODE = 'error_code'
 KEY_ERROR_DESCRIPTION = 'error_description'
 
+#Error datos faltantes entidades
+DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE = "Debe ingresar el usuario"
+DETALLE_ERROR_REGISTRACION_CONTRASENIA_FALTANTE = "Debe ingresar la contraseña"
+DETALLE_ERROR_REGISTRACION_NOMBRE_FALTANTE = "Debe ingresar el nombre del usuario"
+DETALLE_ERROR_REGISTRACION_APELLIDO_FALTANTE = "Debe ingresar el apellido del usuario"
+DETALLE_ERROR_REGISTRACION_PREGUNTA_FALTANTE = "Debe seleccionar una pregunta de seguridad"
+DETALLE_ERROR_REGISTRACION_PREGUNTA_NO_EXISTE = "Debe seleccionar una pregunta existente"
+DETALLE_ERROR_REGISTRACION_USUARIO_EXISTE = "Usuario existente, intente con un nuevo usuario"
+DETALLE_ERROR_REGISTRACION_USUARIO_CONTRASENIA_IGUALES = "Debe ingresar una contrasenia distinta al usuario"
+DETALLE_ERROR_REGISTRACION_RESPUESTA_DESCRIPCION_FALTANTE = "Debe ingresar una respuesta"
+DETALLE_ERROR_ID_USUARIO_FALTANTE = "Debe ingresar el identificador del usuario"
+DETALLE_ERROR_CAMBIAR_CONTRASENIA_NUEVA_FALTANTE = "Debe ingresar una contrasenia nueva"
+DETALLE_ERROR_CAMBIAR_CONTRASENIA_ACTUAL_FALTANTE = "Debe ingresar la contrasenia actual"
+DETALLE_ERROR_CAMBIAR_CONTRASENIA_ACTUAL_NUEVA_IGUALES = "Las contrasenias deben ser diferentes"
 
 # Metodos
 
