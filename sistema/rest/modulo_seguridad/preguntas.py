@@ -24,4 +24,26 @@ def buscar_preguntas(request):
     except (IntegrityError, TypeError, KeyError):
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
 
+@transaction.atomic()
+@metodos_requeridos([METODO_GET])
+def obtener_pregunta_id(request,id_pregunta):
+    try:
+        response = HttpResponse()
+        if id_pregunta == '':
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PREGUNTA_FALTANTE)
+        else:
+            if Pregunta.objects.get(id = id_pregunta):
+                pregunta = Pregunta.objects.get(id = id_pregunta)
+                response.content = armar_response_content(pregunta)
+                response.status_code = 200
+                return response
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PREGUNTA_INEXISTENTE)
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
 
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
