@@ -194,16 +194,19 @@ def eliminar_usuario(request):
 
 @transaction.atomic()
 @metodos_requeridos([METODO_GET])
-def obtener_usuario(request,id_usuario):
+def obtener_usuario_id(request,id_usuario):
     try:
         response = HttpResponse()
-        if Usuario.objects.get(id = id_usuario):
-            usuario = Usuario.objects.get(id = id_usuario)
-            response.content = armar_response_content(usuario)
-            response.status_code = 200
-            return response
-        else:
+        if id_usuario == '':
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_ID_USUARIO_FALTANTE)
+        else:
+            if Usuario.objects.get(id = id_usuario):
+                usuario = Usuario.objects.get(id = id_usuario)
+                response.content = armar_response_content(usuario)
+                response.status_code = 200
+                return response
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_INEXISTENTE)
     except ValueError as err:
         print err.args
         return build_bad_request_error(response, err.args[0], err.args[1])
@@ -212,6 +215,32 @@ def obtener_usuario(request,id_usuario):
         print err.args
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_GET])
+def obtener_usuario_por_usuario(request,usuario):
+    try:
+        response = HttpResponse()
+        if usuario == '':
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE)
+        else:
+            if Usuario.objects.get(usuario = usuario):
+                usuario_actual = Usuario.objects.get(usuario = usuario)
+                response.content = armar_response_content(usuario_actual)
+                response.status_code = 200
+                return response
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_INEXISTENTE)
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+
 
 @transaction.atomic()
 @metodos_requeridos([METODO_PUT])
@@ -251,6 +280,46 @@ def cambiar_contrasenia(request):
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
 
-#@transaction.atomic()
-#@metodos_requeridos([METODO_POST])
-#def recuperar_cuenta:
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def recuperar_cuenta(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if ID_USUARIO in datos and not (ID_USUARIO == ''):
+                usuario = Usuario.objects.get(id=datos[ID_USUARIO])
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_ID_USUARIO_FALTANTE)
+            if ID_PREGUNTA in datos and not (ID_PREGUNTA == ''):
+               if Pregunta.objects.get(id=datos[ID_PREGUNTA]):
+                   pregunta = Pregunta.objects.get(id = datos[ID_PREGUNTA])
+               else:
+                   raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PREGUNTA_INEXISTENTE)
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PREGUNTA_FALTANTE)
+            if RESPUESTA_DESCRIPCION in datos and not (RESPUESTA_DESCRIPCION == ''):
+                respuesta_ingresada = datos[RESPUESTA_DESCRIPCION]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_RESPUESTA_DESCRIPCION_FALTANTE)
+            respuesta_guardada = RespuestaPregunta.objects.get(usuario = usuario,
+                                                               pregunta = pregunta).descripcion
+            if lower(respuesta_guardada) != lower(respuesta_ingresada):
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_RESPUESTAS_NO_COINCIDEN)
+            if CONTRASENIA_NUEVA in datos and not (CONTRASENIA_NUEVA == ''):
+                usuario.contrasenia = datos[CONTRASENIA_NUEVA]
+                usuario.save()
+                response.content = armar_response_content(None,CAMBIO_CONTRASENIA_USUARIO)
+                response.status_code = 200
+                return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)

@@ -50,8 +50,8 @@ class Usuario(models.Model):
             usuario = self.usuario,
             fecha_desde = self.fecha_desde,
             fecha_hasta = self.fecha_hasta,
-            estado = self.estado.nombre,
-            pregunta = self.pregunta.descripcion
+            id_estado = self.estado.id,
+            id_pregunta = self.pregunta.id
         )
 
 class SesionUsuario(models.Model):
@@ -69,8 +69,8 @@ class RespuestaPregunta(models.Model):
         return dict(
             id_respuesta = self.id,
             descripcion =  self.descripcion,
-            usuario = self.usuario,
-            pregunta = self.pregunta
+            id_usuario = self.usuario.id,
+            id_pregunta = self.pregunta.id
         )
 
 class HistoricoEstadoUsuario(models.Model):
