@@ -55,9 +55,11 @@ class Usuario(models.Model):
         )
 
 class SesionUsuario(models.Model):
-    fecha_desde = models.DateTimeField(null=True)
-    fecha_hasta = models.DateTimeField(null=True)
-    fecha_hasta = models.DateTimeField(null=True)
+    key_session = models.UUIDField(primary_key = True, default = uuid.uuid4, editable= False)
+    fecha_hora_desde = models.DateTimeField(null=True)
+    fecha_hora_hasta = models.DateTimeField(null=True)
+
+    usuario = models.ForeignKey(Usuario, db_column='id_usuario')
 
 class RespuestaPregunta(models.Model):
     descripcion = models.CharField(max_length=50)

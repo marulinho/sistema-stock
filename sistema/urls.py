@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^obtenerUsuario/(?P<usuario>[0-9a-zA-z]+)/$', usuario.obtener_usuario_por_usuario, name='obtenerUsuario'),
     url(r'^modificarContrasenia/$', usuario.cambiar_contrasenia, name='modificarContrasenia'),
     url(r'^recuperarCuenta/$', usuario.recuperar_cuenta, name='recuperarCuenta'),
+    url(r'^iniciarSesion/$', usuario.iniciar_sesion, name='iniciarSesion'),
+    url(r'^finalizarSesion/$', usuario.finalizar_sesion, name='finalizarSesion'),
 ]

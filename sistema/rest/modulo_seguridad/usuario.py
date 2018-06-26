@@ -323,3 +323,101 @@ def recuperar_cuenta(request):
         print err.args
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_POST])
+def iniciar_sesion(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if USUARIO in datos and not (USUARIO == ''):
+                usuario_ingresado = datos[USUARIO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE)
+            if CONTRASENIA in datos and not (CONTRASENIA == ''):
+                contrasenia_ingresada = datos[CONTRASENIA]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_CONTRASENIA_FALTANTE)
+
+            #busco el usuario asociado a los parametros ingresados
+            estado_habilitado = EstadoUsuario.objects.get(nombre=ESTADO_HABILITADO)
+
+            if Usuario.objects.get(usuario = usuario_ingresado,
+                                   contrasenia = contrasenia_ingresada,
+                                   estado = estado_habilitado):
+                usuario = Usuario.objects.get(usuario = usuario_ingresado,
+                                              contrasenia = contrasenia_ingresada,
+                                              estado = estado_habilitado)
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CREDENCIALES_INCORRECTAS)
+
+            #busco que no tenga sesion activa y si tiene la cierro
+            if SesionUsuario.objects.filter(usuario = usuario,
+                                            fecha_hora_hasta__isnull = True).__len__()>=1:
+                sesion_usuario = SesionUsuario.objects.get(usuario = usuario, fecha_hora_hasta__isnull = True)
+                sesion_usuario.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
+                sesion_usuario.save()
+            else:
+                sesion_nueva = SesionUsuario(fecha_hora_desde = datetime.datetime.now(pytz.utc),
+                                             usuario = usuario)
+                sesion_nueva.save()
+            response.content = armar_response_content(usuario)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_POST])
+def finalizar_sesion(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if USUARIO in datos and not (USUARIO == ''):
+                usuario_ingresado = datos[USUARIO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE)
+
+            # busco el usuario asociado a los parametros ingresados
+            estado_habilitado = EstadoUsuario.objects.get(nombre=ESTADO_HABILITADO)
+
+            if Usuario.objects.get(usuario=usuario_ingresado,
+                                   estado=estado_habilitado):
+                usuario = Usuario.objects.get(usuario=usuario_ingresado,
+                                              estado=estado_habilitado)
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LOGOUT_FALLIDO)
+
+            # busco sesion activala cierro
+            if SesionUsuario.objects.filter(usuario=usuario,
+                                            fecha_hora_hasta__isnull=True).__len__() >= 1:
+                sesion_usuario = SesionUsuario.objects.get(usuario=usuario,fecha_hora_hasta__isnull=True )
+                sesion_usuario.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
+                sesion_usuario.save()
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LOGOUT_SIN_LOGIN)
+            response.content = armar_response_content(None,DETALLE_ERROR_LOGOUT_EXITOSO)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)

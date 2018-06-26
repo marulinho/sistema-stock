@@ -35,6 +35,10 @@ DETALLE_ERROR_ID_USUARIO_FALTANTE = "Debe ingresar el identificador del usuario"
 DETALLE_ERROR_CAMBIAR_CONTRASENIA_NUEVA_FALTANTE = "Debe ingresar una contrasenia nueva"
 DETALLE_ERROR_CAMBIAR_CONTRASENIA_ACTUAL_FALTANTE = "Debe ingresar la contrasenia actual"
 DETALLE_ERROR_CAMBIAR_CONTRASENIA_ACTUAL_NUEVA_IGUALES = "Las contrasenias deben ser diferentes"
+DETALLE_ERROR_CREDENCIALES_INCORRECTAS = "Usuario o contraseña incorrecta"
+DETALLE_ERROR_LOGOUT_SIN_LOGIN = "Debe iniciar sesion antes de cerrarla"
+DETALLE_ERROR_LOGOUT_FALLIDO = "No se pudo cerra sesion, intente de nuevo"
+DETALLE_ERROR_LOGOUT_EXITOSO = "Finalizo la sesion correctamente"
 
 # Metodos
 
