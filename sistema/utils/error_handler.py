@@ -24,6 +24,7 @@ DETALLE_ERROR_REGISTRACION_NOMBRE_FALTANTE = "Debe ingresar el nombre del usuari
 DETALLE_ERROR_REGISTRACION_APELLIDO_FALTANTE = "Debe ingresar el apellido del usuario"
 DETALLE_ERROR_REGISTRACION_PREGUNTA_FALTANTE = "Debe seleccionar una pregunta de seguridad"
 DETALLE_ERROR_PREGUNTA_FALTANTE = "Debe ingresar el identificador de la pregunta de seguridad"
+DETALLE_ERROR_DESCRIPCION_PREGUNTA_FALTANTE = "Debe ingresar la pregunta de seguridad"
 DETALLE_ERROR_PREGUNTA_INEXISTENTE = "No existe la pregunta de seguridad ingresada"
 DETALLE_ERROR_RESPUESTAS_NO_COINCIDEN = "Las respuestas de seguridad no coinciden"
 DETALLE_ERROR_REGISTRACION_PREGUNTA_NO_EXISTE = "Debe seleccionar una pregunta existente"

@@ -6,7 +6,8 @@ urlpatterns = [
 
     url(r'^buscarPreguntas/$', preguntas.buscar_preguntas, name='buscarPreguntas'),
     url(r'^obtenerPreguntaId/(?P<id_pregunta>[0-9]+)/$', preguntas.obtener_pregunta_id, name='obtenerPreguntaId'),
-    url(r'^guardarUsuario/$', usuario.guardar_usuario, name='guardarUsuario'),
+    url(r'^obtenerPreguntaDescripcion/$', preguntas.obtener_pregunta_descripcion, name='obtenerPreguntaDescripcion'),
+    url(r'^registrarUsuario/$', usuario.registar_usuario, name='registrarUsuario'),
     url(r'^modificarUsuario/$', usuario.modificar_usuario, name='modificarUsuario'),
     url(r'^eliminarUsuario/$', usuario.eliminar_usuario, name='eliminarUsuario'),
     url(r'^obtenerUsuarioId/(?P<id_usuario>[0-9]+)/$', usuario.obtener_usuario_id, name='obtenerUsuarioId'),

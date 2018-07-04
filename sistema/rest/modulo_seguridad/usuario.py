@@ -16,7 +16,7 @@ from sistema.utils.error_handler import *
 
 @transaction.atomic()
 @metodos_requeridos([METODO_POST])
-def guardar_usuario(request):
+def registar_usuario(request):
 
     try:
         datos = obtener_datos_json(request)

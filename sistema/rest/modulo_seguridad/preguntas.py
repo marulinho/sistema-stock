@@ -47,3 +47,32 @@ def obtener_pregunta_id(request,id_pregunta):
         print err.args
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_POST])
+def obtener_pregunta_descripcion(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if PREGUNTA_DESCRIPCION in datos and not (PREGUNTA_DESCRIPCION ==''):
+                pregunta = Pregunta.objects.get(descripcion = datos[PREGUNTA_DESCRIPCION])
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_DESCRIPCION_PREGUNTA_FALTANTE)
+            if pregunta:
+                response.content = armar_response_content(pregunta)
+                response.status_code = 200
+                return response
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PREGUNTA_INEXISTENTE)
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
