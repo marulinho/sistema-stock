@@ -306,8 +306,8 @@ def recuperar_cuenta(request):
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_RESPUESTA_DESCRIPCION_FALTANTE)
             respuesta_guardada = RespuestaPregunta.objects.get(usuario = usuario,
-                                                               pregunta = pregunta).descripcion
-            if lower(respuesta_guardada) != lower(respuesta_ingresada):
+                                                               pregunta = pregunta)
+            if lower(respuesta_guardada.descripcion) != lower(respuesta_ingresada):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_RESPUESTAS_NO_COINCIDEN)
             if CONTRASENIA_NUEVA in datos and not (CONTRASENIA_NUEVA == ''):
                 usuario.contrasenia = datos[CONTRASENIA_NUEVA]

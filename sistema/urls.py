@@ -1,12 +1,15 @@
 from django.conf.urls import url
 
-from sistema.rest.modulo_seguridad import preguntas,usuario
+from sistema.rest.modulo_seguridad import preguntas,usuario,respuestas
 
 urlpatterns = [
 
     url(r'^buscarPreguntas/$', preguntas.buscar_preguntas, name='buscarPreguntas'),
     url(r'^obtenerPreguntaId/(?P<id_pregunta>[0-9]+)/$', preguntas.obtener_pregunta_id, name='obtenerPreguntaId'),
     url(r'^obtenerPreguntaDescripcion/$', preguntas.obtener_pregunta_descripcion, name='obtenerPreguntaDescripcion'),
+    url(r'^obtenerUsuarioPregunta/(?P<usuario>[0-9a-zA-Z]+)/$', preguntas.obtener_pregunta_usuario, name='obtenerUsuarioPregunta'),
+    url(r'^obtenerRespuestaUsuarioPregunta/(?P<id_usuario>[0-9a-zA-Z]+)/(?P<id_pregunta>[0-9a-zA-Z]+)/$', respuestas.obtener_respuesta_pregunta_usuario, name='obtenerRespuestaUsuarioPregunta'),
+
     url(r'^registrarUsuario/$', usuario.registar_usuario, name='registrarUsuario'),
     url(r'^modificarUsuario/$', usuario.modificar_usuario, name='modificarUsuario'),
     url(r'^eliminarUsuario/$', usuario.eliminar_usuario, name='eliminarUsuario'),

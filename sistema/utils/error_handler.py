@@ -40,6 +40,7 @@ DETALLE_ERROR_CREDENCIALES_INCORRECTAS = "Usuario o contraseña incorrecta"
 DETALLE_ERROR_LOGOUT_SIN_LOGIN = "Debe iniciar sesion antes de cerrarla"
 DETALLE_ERROR_LOGOUT_FALLIDO = "No se pudo cerra sesion, intente de nuevo"
 DETALLE_ERROR_LOGOUT_EXITOSO = "Finalizo la sesion correctamente"
+DETALLE_ERROR_RESPUESTA_INEXISTENTE = "Debe ingresar un usuario y pregunta que tenga una respuesta"
 
 # Metodos
 
