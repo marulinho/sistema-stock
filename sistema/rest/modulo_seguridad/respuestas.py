@@ -23,7 +23,7 @@ def obtener_respuesta_pregunta_usuario(request,id_usuario,id_pregunta):
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_INEXISTENTE)
         if Pregunta.objects.get(id = id_pregunta) is None:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_INEXISTENTE)
-        if RespuestaPregunta.objects.get(usuario = id_usuario , pregunta = id_pregunta) is None:
+        if RespuestaPregunta.objects.filter(usuario = id_usuario , pregunta = id_pregunta).__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_RESPUESTA_INEXISTENTE)
         respuesta = RespuestaPregunta.objects.get(usuario = id_usuario , pregunta = id_pregunta)
         response.content = armar_response_content(respuesta)

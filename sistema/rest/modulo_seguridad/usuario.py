@@ -109,10 +109,6 @@ def modificar_usuario(request):
                 usuario_modificar = Usuario.objects.get(id=datos[ID_USUARIO])
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_ID_USUARIO_FALTANTE)
-            if USUARIO in datos and not (USUARIO == ''):
-                usuario = datos[USUARIO]
-            else:
-                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE)
             if NOMBRE in datos and not (NOMBRE == ''):
                 nombre = datos[NOMBRE]
             else:
@@ -121,33 +117,30 @@ def modificar_usuario(request):
                 apellido = datos[APELLIDO]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_APELLIDO_FALTANTE)
-            if ID_PREGUNTA in datos and not (ID_PREGUNTA == ''):
-                id_pregunta = datos[ID_PREGUNTA]
-            else:
-                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_PREGUNTA_FALTANTE)
             if RESPUESTA_DESCRIPCION in datos and not (RESPUESTA_DESCRIPCION == ''):
                 respuesta_descripcion = datos[RESPUESTA_DESCRIPCION]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_RESPUESTA_DESCRIPCION_FALTANTE)
 
             # Validamos que la pregunta exista
-            if Pregunta.objects.filter(id=id_pregunta,
+            if Pregunta.objects.filter(id=usuario_modificar.pregunta_id,
                                         habilitado=True).__len__() < 1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_PREGUNTA_NO_EXISTE)
             else:
-                pregunta = Pregunta.objects.get(id=id_pregunta, habilitado=True)
+                pregunta = Pregunta.objects.get(id=usuario_modificar.pregunta_id, habilitado=True)
 
-            #Validamos que no exista otro usuario con el mismo nombre que el ingresado
-            if Usuario.objects.filter(usuario = usuario).exclude(id = usuario_modificar.id).__len__()>=1:
-                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_EXISTE)
             usuario_modificar.nombre = nombre
             usuario_modificar.apellido = apellido
-            usuario_modificar.usuario = usuario
             usuario_modificar.pregunta = pregunta
             usuario_modificar.save()
-            respuesta_modificada = RespuestaPregunta(descripcion = respuesta_descripcion,
-                                                     usuario = usuario_modificar,
-                                                     pregunta = pregunta)
+
+            if RespuestaPregunta.objects.filter(usuario = usuario_modificar,
+                                                pregunta = pregunta).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_RESPUESTA_INEXISTENTE)
+            else:
+                respuesta_modificada = RespuestaPregunta.objects.get(usuario = usuario_modificar,
+                                                                     pregunta = pregunta)
+            respuesta_modificada.descripcion = respuesta_descripcion
             respuesta_modificada.save()
             response.content = armar_response_content(None,MODIFICACION_USUARIO)
             response.status_code = 200
@@ -162,7 +155,7 @@ def modificar_usuario(request):
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
 
 @transaction.atomic()
-@metodos_requeridos([METODO_DELETE])
+@metodos_requeridos([METODO_PUT])
 def eliminar_usuario(request):
 
     try:
@@ -266,11 +259,18 @@ def cambiar_contrasenia(request):
                 usuario = Usuario.objects.get(id = datos[ID_USUARIO])
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_ID_USUARIO_FALTANTE)
-            usuario.contrasenia = contrasenia_nueva
-            usuario.save()
-            response.content = armar_response_content(None,CAMBIO_CONTRASENIA_USUARIO)
-            response.status_code = 200
-            return response
+            if SesionUsuario.objects.filter(usuario=usuario,
+                                            fecha_hora_hasta__isnull=True).__len__() >= 1:
+                sesion_usuario = SesionUsuario.objects.get(usuario=usuario, fecha_hora_hasta__isnull=True)
+                sesion_usuario.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
+                sesion_usuario.save()
+                usuario.contrasenia = contrasenia_nueva
+                usuario.save()
+                response.content = armar_response_content(None, CAMBIO_CONTRASENIA_USUARIO)
+                response.status_code = 200
+                return response
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LOGOUT_SIN_LOGIN)
     except ValueError as err:
         print err.args
         return build_bad_request_error(response, err.args[0], err.args[1])
@@ -346,9 +346,9 @@ def iniciar_sesion(request):
             #busco el usuario asociado a los parametros ingresados
             estado_habilitado = EstadoUsuario.objects.get(nombre=ESTADO_HABILITADO)
 
-            if Usuario.objects.get(usuario = usuario_ingresado,
+            if Usuario.objects.filter(usuario = usuario_ingresado,
                                    contrasenia = contrasenia_ingresada,
-                                   estado = estado_habilitado):
+                                   estado = estado_habilitado).__len__() >=1 :
                 usuario = Usuario.objects.get(usuario = usuario_ingresado,
                                               contrasenia = contrasenia_ingresada,
                                               estado = estado_habilitado)
@@ -387,22 +387,22 @@ def finalizar_sesion(request):
         if datos == {}:
             raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
         else:
-            if USUARIO in datos and not (USUARIO == ''):
-                usuario_ingresado = datos[USUARIO]
+            if ID_USUARIO in datos and not (ID_USUARIO == ''):
+                usuario_ingresado = datos[ID_USUARIO]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REGISTRACION_USUARIO_FALTANTE)
 
             # busco el usuario asociado a los parametros ingresados
             estado_habilitado = EstadoUsuario.objects.get(nombre=ESTADO_HABILITADO)
 
-            if Usuario.objects.get(usuario=usuario_ingresado,
-                                   estado=estado_habilitado):
-                usuario = Usuario.objects.get(usuario=usuario_ingresado,
+            if Usuario.objects.filter(id=usuario_ingresado,
+                                   estado=estado_habilitado).__len__()>=1:
+                usuario = Usuario.objects.get(id=usuario_ingresado,
                                               estado=estado_habilitado)
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LOGOUT_FALLIDO)
 
-            # busco sesion activala cierro
+            # busco sesion activa y la cierro
             if SesionUsuario.objects.filter(usuario=usuario,
                                             fecha_hora_hasta__isnull=True).__len__() >= 1:
                 sesion_usuario = SesionUsuario.objects.get(usuario=usuario,fecha_hora_hasta__isnull=True )

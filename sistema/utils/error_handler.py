@@ -41,6 +41,33 @@ DETALLE_ERROR_LOGOUT_SIN_LOGIN = "Debe iniciar sesion antes de cerrarla"
 DETALLE_ERROR_LOGOUT_FALLIDO = "No se pudo cerra sesion, intente de nuevo"
 DETALLE_ERROR_LOGOUT_EXITOSO = "Finalizo la sesion correctamente"
 DETALLE_ERROR_RESPUESTA_INEXISTENTE = "Debe ingresar un usuario y pregunta que tenga una respuesta"
+DETALLE_ERROR_CODIGO_CATEGORIA_FALTANTE = 'Debe ingresar un codigo para la categoria'
+DETALLE_ERROR_CODIGO_INEXISTENTE = 'Debe ingresar un codigo existente'
+DETALLE_ERROR_NOMBRE_CATEGORIA_FALTANTE = 'Debe ingresar el nombre de la categoria'
+DETALLE_ERROR_NOMBRE_CATEGORIA_EXISTENTE = 'El nombre de categoria ya existe, intente con otro'
+DETALLE_ERROR_CATEGORIA_INEXISTENTE = 'No existe una categoria con el indentificador ingresado'
+DETALLE_ERROR_CATEGORIA_HABILITADA_INEXISTENTE = 'No existe una categoria hablitada con el indentificador ingresado'
+DETALLE_ERROR_CATEGORIAS_INEXISTENTES = 'No existen categorias habilitadas'
+DETALLE_ERROR_PRODUCTO_EXISTENTE = 'Las caracteristicas ingresadas le corresponden a un producto existete'
+DETALLE_ERROR_PRODUCTOS_INEXISTENTES = 'No existen productos habilitados'
+DETALLE_ERROR_PRODUCTO_INEXISTENTE = 'No existe un producto con el codigo ingresado'
+DETALLE_ERROR_NOMBRE_PRODUCTO_FALTANTE = 'Debe ingresar el nombre del producto'
+DETALLE_ERROR_MARCA_PRODUCTO_FALTANTE = 'Debe ingresar la marca del producto'
+DETALLE_ERROR_NOMBRE_PRODUCTO_EXISTENTE = 'El nombre de producto ya existe, intente con otro'
+DETALLE_ERROR_CODIGO_PRODUCTO_FALTANTE = 'Debe ingresar un codigo para el producto'
+DETALLE_ERROR_MEDIDA_PRODUCTO_FALTANTE = 'Debe ingresar una medida del producto'
+DETALLE_ERROR_UNIDAD_MEDIDA_PRODUCTO_FALTANTE = 'Debe ingresar una unidad de medida del producto'
+DETALLE_ERROR_UNIDAD_MEDIDA_PRODUCTO_INEXISTENTE = 'No existe la unidad de medida ingresada'
+DETALLE_ERROR_UNIDAD_MEDIDA_HABILITADA = 'No existen unidades de medidas habilitadas'
+DETALLE_ERROR_ID_UNIDAD_MEDIDA_FALTANTE = 'Debe ingresar el identificador de la unidad de medida'
+DETALLE_ERROR_ID_UNIDAD_MEDIDA_INEXISTENTE = 'No existe una unidad de medida con el identificador ingresado'
+DETALLE_ERROR_NOMBRE_SUBCATEGORIA_EXISTENTE = 'El nombre de subcategoria ya existe, intente con otro'
+DETALLE_ERROR_CODIGO_SUBCATEGORIA_FALTANTE = 'Debe ingresar el codigo de la subcategoria'
+DETALLE_ERROR_NOMBRE_SUBCATEGORIA_FALTANTE = 'Debe ingresar el nombre de la subcategoria'
+DETALLE_ERROR_SUBCATEGORIAS_INEXISTENTES = 'No existen subcategorias habilitadas'
+DETALLE_ERROR_SUBCATEGORIA_INEXISTENTE = 'No existe un subcategoria con el identificador ingresado'
+DETALLE_ERROR_CATEGORIA_SUBCATEGORIA_INEXISTENTE = 'No existen subcategorias habilitadas para la categoria seleccionada'
+ASIGNACION_SUBCATEGORIA_EXITOSA = 'La subcategoria se asigno correctamente'
 
 # Metodos
 
