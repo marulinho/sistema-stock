@@ -26,6 +26,10 @@ ELIMINACION_SUBCATEGORIA = 'SubCategoria eliminada exitosamente'
 CREACION_PRODUCTO = 'Producto creado exitosamente'
 MODIFICACION_PRODUCTO = 'Producto modificado exitosamente'
 ELIMINACION_PRODUCTO = 'Producto eliminado exitosamente'
+CREACION_COMBO = 'Combo creado exitosamente'
+ELIMINACION_COMBO = 'Combo eliminado exitosamente'
+CREACION_LISTA_PRECIO = 'Lista de Precios creada exitosamente'
+ELIMINACION_LISTA_PRECIO = 'Lista de Precios eliminada exitosamente'
 
 #Constantes Models
 #Generales
@@ -56,6 +60,16 @@ ID_SUBCATEGORIA  = 'id_subcategoria'
 
 #Producto
 ID_PRODUCTO = 'id_producto'
+
+#Combo
+PRECIO = 'precio'
+LISTA_PRODUCTOS = 'lista_productos'
+CANTIDAD_PRODUCTOS = 'cantidad_productos'
+PRECIO_PRODUCTOS_COMBO = 'precio_productos_combo'
+
+#ListaPrecio
+LISTA_PRECIOS_COMPRA = 'lista_precios_compra'
+LISTA_PRECIOS_VENTA = 'lista_precios_venta'
 
 #Unidad Medida
 NOMBRE_UNIDAD_MEDIDA  = 'nombre_unidad_medida'

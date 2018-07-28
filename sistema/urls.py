@@ -7,6 +7,8 @@ from sistema.rest.modulo_administracion import categoria
 from sistema.rest.modulo_administracion import subcategoria
 from sistema.rest.modulo_administracion import producto
 from sistema.rest.modulo_administracion import unidad_medida
+from sistema.rest.modulo_administracion import combo
+from sistema.rest.modulo_administracion import lista_precio
 
 urlpatterns = [
 
@@ -68,4 +70,13 @@ urlpatterns = [
     #UNIDAD_MEDIDA
     url(r'^obtenerUnidadMedida/$', unidad_medida.obtener_unidad_medida, name='obtenerUnidadMedida'),
     url(r'^obtenerUnidadMedidaId/(?P<id_unidad_medida>[0-9]+)/$', unidad_medida.obtener_unidad_medida_id, name='obtenerUnidadMedidaId'),
+
+    #COMBO
+    url(r'^registrarCombo/$', combo.registrar_combo, name='registrarCombo'),
+    url(r'^eliminarCombo/$', combo.eliminar_combo, name='eliminarCombo'),
+    url(r'^obtenerDetalleCombo/(?P<id_combo>[0-9]+)/$', combo.obtener_detalle_combo, name='obtenerDetalleCombo'),
+
+    #LISTA_PRECIO
+    url(r'^registrarListaPrecio/$', lista_precio.registrar_lista_precio, name='registrarListaPrecio'),
+    url(r'^eliminarListaPrecio/$', lista_precio.eliminar_lista_precio, name='eliminarListaPrecio'),
 ]
