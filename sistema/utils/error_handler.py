@@ -67,7 +67,12 @@ DETALLE_ERROR_NOMBRE_SUBCATEGORIA_FALTANTE = 'Debe ingresar el nombre de la subc
 DETALLE_ERROR_SUBCATEGORIAS_INEXISTENTES = 'No existen subcategorias habilitadas'
 DETALLE_ERROR_SUBCATEGORIA_INEXISTENTE = 'No existe un subcategoria con el identificador ingresado'
 DETALLE_ERROR_CATEGORIA_SUBCATEGORIA_INEXISTENTE = 'No existen subcategorias habilitadas para la categoria seleccionada'
+DETALLE_ERROR_CATEGORIA_PRODUCTO_INEXISTENTE = 'No existen productos habilitados para la categoria seleccionada'
+DETALLE_ERROR_SUBCATEGORIA_PRODUCTO_INEXISTENTE = 'No existen productos habilitados para la subcategoria seleccionada'
 ASIGNACION_SUBCATEGORIA_EXITOSA = 'La subcategoria se asigno correctamente'
+ASIGNACION_PRODUCTO_EXITOSA = 'El producto se asigno correctamente'
+DESASIGNACION_PRODUCTO_EXITOSA = 'El producto se desasigno correctamente'
+DESASIGNACION_SUBCATEGORIA_EXITOSA = 'La categoria se desasigno correctamente'
 
 # Metodos
 

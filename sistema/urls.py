@@ -37,6 +37,8 @@ urlpatterns = [
     url(r'^obtenerCategorias/$', categoria.obtener_categorias, name='obtenerCategorias'),
     url(r'^obtenerCategoriaId/(?P<id_categoria>[0-9]+)/$', categoria.obtener_categoria_id, name='obtenerCategoriaId'),
     url(r'^habilitarCategoria/(?P<id_categoria>[0-9]+)/$', categoria.habilitar_categoria, name='habilitarCategoria'),
+    url(r'^desasignarProductoCategoria/$', categoria.desasignar_producto_categoria, name='desasignarProductoCategoria'),
+    url(r'^desasignarSubcategoriaCategoria/$', categoria.desasignar_subcategoria_categoria, name='desasignarSubcategoriaCategoria'),
 
     #SUBCATEGORIAS
     url(r'^registrarSubCategoria/$', subcategoria.registrar_subcategoria, name='registrarSubCategoria'),
@@ -47,6 +49,7 @@ urlpatterns = [
     url(r'^obtenerSubCategoriaCategoria/(?P<id_categoria>[0-9]+)/$', subcategoria.obtener_subcategorias_categoriaid, name='obtenerSubCategoriaCategoria'),
     url(r'^obtenerSubCategoriaNoCategoria/(?P<id_categoria>[0-9]+)/$', subcategoria.obtener_subcategorias_no_categoriaid, name='obtenerSubCategoriaNoCategoria'),
     url(r'^asignarSubcategoriaCategoria/$', subcategoria.asginar_subcategoria_categoria, name='asignarSubcategoriaCategoria'),
+    url(r'^desasignarProductoSubCategoria/$', subcategoria.desasignar_producto_subcategoria, name='desasignarProductoSubCategoria'),
 
     #PRODUCTOS
     url(r'^registrarProducto/$', producto.registrar_producto, name='registrarProducto'),
@@ -54,6 +57,13 @@ urlpatterns = [
     url(r'^eliminarProducto/$', producto.eliminar_producto, name='eliminarProducto'),
     url(r'^obtenerProductos/$', producto.obtener_productos, name='obtenerProductos'),
     url(r'^obtenerProductoId/(?P<id_producto>[0-9]+)/$', producto.obtener_producto_id, name='obtenerProductoId'),
+    url(r'^obtenerProductoCategoria/(?P<id_categoria>[0-9]+)/$', producto.obtener_productos_categoriaid, name='obtenerProductoCategoria'),
+    url(r'^obtenerProductoNoCategoria/(?P<id_categoria>[0-9]+)/$', producto.obtener_productos_no_categoriaid, name='obtenerProductoNoCategoria'),
+    url(r'^asignarProductoCategoria/$', producto.asginar_producto_categoria, name='asignarProductoCategoria'),
+    url(r'^obtenerProductoSubCategoria/(?P<id_subcategoria>[0-9]+)/$', producto.obtener_productos_subcategoriaid, name='obtenerProductoSubCategoria'),
+    url(r'^obtenerProductoNoSubCategoria/(?P<id_subcategoria>[0-9]+)/$', producto.obtener_productos_no_subcategoriaid, name='obtenerProductoNoSubCategoria'),
+    url(r'^asignarProductoSubCategoria/$', producto.asiginar_producto_subcategoria, name='asignarProductoSubCategoria'),
+
 
     #UNIDAD_MEDIDA
     url(r'^obtenerUnidadMedida/$', unidad_medida.obtener_unidad_medida, name='obtenerUnidadMedida'),

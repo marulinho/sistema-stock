@@ -54,6 +54,9 @@ ID_CATEGORIA = 'id_categoria'
 #Subcategoria
 ID_SUBCATEGORIA  = 'id_subcategoria'
 
+#Producto
+ID_PRODUCTO = 'id_producto'
+
 #Unidad Medida
 NOMBRE_UNIDAD_MEDIDA  = 'nombre_unidad_medida'
 ID_UNIDAD_MEDIDA = 'id_unidad_medida'
