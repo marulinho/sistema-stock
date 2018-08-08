@@ -65,7 +65,7 @@ ID_PRODUCTO = 'id_producto'
 PRECIO = 'precio'
 LISTA_PRODUCTOS = 'lista_productos'
 CANTIDAD_PRODUCTOS = 'cantidad_productos'
-PRECIO_PRODUCTOS_COMBO = 'precio_productos_combo'
+MARGEN_GANANCIA_PRODUCTO_COMBO = 'margen_ganancia_productos_combo'
 
 #ListaPrecio
 LISTA_PRECIOS_COMPRA = 'lista_precios_compra'

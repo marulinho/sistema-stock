@@ -95,11 +95,15 @@ DETALLE_ERROR_LISTA_PRECIO_VENTA_LISTA_PRECIO_INSUFICIENTE = 'Debe ingresar un p
 DETALLE_ERROR_LISTA_PRECIO_LONGITUD_DISTINTA = 'Las cantidades ingresadas no se corresponden'
 DETALLE_ERROR_NOMBRE_LISTA_PRECIO_EXISTENTE = 'El nombre de la lista ya existe, intente con otro'
 DETALLE_ERROR_PRECIO_PRODUCTOS_COMBO_FALTANTE = 'Debe ingresar la lista de precios de los de productos que van a conformar el combo'
-DETALLE_ERROR_PRECIO_PRODUCTOS_COMBO_MENOR = 'Los precios de los productos deben ser mayores a cero'
+DETALLE_ERROR_MARGEN_GANANCIA_PRODUCTOS_COMBO_MENOR = 'Los margenes de ganancia de los productos deben ser mayores a cero'
 DETALLE_ERROR_LISTA_PRECIOS_VENTA_LISTA_PRECIO_FALTANTE = 'Debe ingresar la lista de precios de venta de los productos que van a conformar la lista de precios'
 DETALLE_ERROR_LISTA_PRECIO_VENTA_COMPRA_LISTA_PRECIO_IGUALES = 'El precio de venta debe ser mayor al precio de compra'
 DETALLE_ERROR_CODIGO_LISTA_PRECIO_FALTANTE = 'Debe ingresar el codigo de la lista de precios'
 DETALLE_ERROR_CODIGO_LISTA_PRECIO_INEXISTENTE = 'No existe una lista de precios con el codigo ingresado'
+DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA = 'No hay listas de precios habilitadas'
+DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE = 'La lista de precios no tiene detalles'
+DETALLE_ERROR_PRODUCTO_INEXISTENTE_LISTA = 'No existe el producto en la lista de precios'
+DETALLE_ERROR_PRODUCTOS_DESHABILITADOS = 'No existen productos habilitados'
 
 
 # Metodos

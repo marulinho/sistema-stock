@@ -105,6 +105,7 @@ class Categoria(models.Model):
         else:
             self.codigo = Categoria.objects.order_by('codigo').last().codigo + 1
         super(Categoria, self).save()
+
 class EstadoSubCategoria(models.Model):
     nombre = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=50)
@@ -134,6 +135,7 @@ class SubCategoria(models.Model):
         else:
             self.codigo = SubCategoria.objects.order_by('codigo').last().codigo + 1
         super(SubCategoria, self).save()
+
 class EstadoUnidadMedida(models.Model):
     nombre = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=50)
@@ -167,7 +169,6 @@ class EstadoProducto(models.Model):
     def __str__(self):
         return "Estado Producto: " + self.nombre
 
-
 class Producto(models.Model):
     codigo = models.IntegerField(primary_key=True, default=1000)
     nombre = models.CharField(max_length=60)
@@ -175,6 +176,7 @@ class Producto(models.Model):
     medida = models.IntegerField()
     stock_local = models.IntegerField(null = True)
     stock_deposito = models.IntegerField(null=True)
+    stock_minimo = models.IntegerField()
 
     unidad_medida = models.ForeignKey(UnidadMedida, db_column='id_unidad_medida')
     estado = models.ForeignKey(EstadoProducto, db_column = 'id_estado_producto')
@@ -189,6 +191,7 @@ class Producto(models.Model):
             medida = self.medida,
             stock_local = self.stock_local,
             stock_deposito = self.stock_deposito,
+            stock_minimo = self.stock_minimo,
             id_unidad_medida = self.unidad_medida.id,
             nombre_unidad_medida = self.unidad_medida.nombre,
             id_estado = self.estado.id
@@ -208,12 +211,10 @@ class EstadoCombo(models.Model):
     def __str__(self):
         return "Estado Combo: " + self.nombre
 
-
-
 class Combo(models.Model):
     codigo = models.IntegerField(primary_key=True, default=1000)
     nombre = models.CharField(max_length=60)
-    precio = models.IntegerField()
+    precio = models.FloatField()
 
     estado = models.ForeignKey(EstadoCombo, db_column = 'id_estado_combo')
 
@@ -235,16 +236,19 @@ class Combo(models.Model):
 class ComboDetalle(models.Model):
     cantidad = models.IntegerField()
     producto = models.ForeignKey(Producto, db_column='id_producto')
-    precio_unitario_producto_combo = models.IntegerField()
-    subtotal = models.IntegerField()
+    precio_unitario_producto_combo = models.FloatField()
+    margen_ganancia_producto_combo = models.FloatField()
+    subtotal = models.FloatField()
     combo = models.ForeignKey(Combo, db_column='id_combo')
 
     def as_json(self):
         return dict(
             cantidad = self.cantidad,
-            precio_producto_combo = self.precio_producto_combo,
+            precio_unitario_producto_combo = self.precio_unitario_producto_combo,
+            margen_ganancia_producto_combo = self.margen_ganancia_producto_combo,
+            subtotal = self.subtotal,
             producto = self.producto.as_json(),
-            combo = self.combo.codigo
+            combo = self.combo.as_json()
         )
 
 class EstadoListaPrecio(models.Model):
@@ -253,8 +257,6 @@ class EstadoListaPrecio(models.Model):
 
     def __str__(self):
         return "Estado Lista de Precio: " + self.nombre
-
-
 
 class ListaPrecio(models.Model):
     codigo = models.IntegerField(primary_key=True, default=1000)
@@ -281,8 +283,8 @@ class ListaPrecio(models.Model):
         super(ListaPrecio, self).save()
 
 class ListaPrecioDetalle(models.Model):
-    precio_unitario_compra = models.IntegerField()
-    precio_unitario_venta = models.IntegerField()
+    precio_unitario_compra = models.FloatField()
+    precio_unitario_venta = models.FloatField()
 
     lista_precio = models.ForeignKey(ListaPrecio, db_column= 'id_lista_precio')
     producto = models.ForeignKey(Producto, db_column='id_producto')
@@ -294,4 +296,220 @@ class ListaPrecioDetalle(models.Model):
             precio_unitario_venta = self.precio_unitario_venta,
             producto = self.producto.as_json(),
             lista_precio = self.lista_precio.as_json()
+        )
+
+class EstadoTipoMovimientoStock(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Tipo Movimiento de Stock: " + self.nombre
+
+class TipoMovimientoStock(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=60)
+    descripcion = models.CharField(max_length=60)
+
+    estado = models.ForeignKey(EstadoTipoMovimientoStock, db_column='id_estado')
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre = self.nombre,
+            descripcion = self.descripcion,
+            estado = self.estado.id
+        )
+
+class EstadoMovimientoStock(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Movimiento de Stock: " + self.nombre
+
+class MovimientoStock(models.Model):
+    codigo = models.IntegerField(primary_key=True, default=1000)
+    fecha_creacion = models.DateTimeField(null=False)
+    total_parcial = models.FloatField()
+    total_final = models.FloatField()
+    descuento = models.FloatField(null=True)
+
+    usuario = models.ForeignKey(Usuario, db_column='id_usuario')
+    tipo_movimiento = models.ForeignKey(TipoMovimientoStock, db_column='id_tipo_movimiento')
+    estado = models.ForeignKey(EstadoMovimientoStock, db_column='id_estado_movimiento')
+
+    def as_json(self):
+        return dict(
+            codigo=self.codigo,
+            fecha_creacion = self.fecha_creacion,
+            descuento = self.descuento,
+            total_parcial = self.total_parcial,
+            total_final = self.total_final,
+            usuario = self.usuario.usuario,
+            tipo_movimiento = self.tipo_movimiento.codigo,
+            id_estado=self.estado.id
+        )
+
+    def saveNewMovimientoStock(self):
+        if MovimientoStock.objects.order_by('codigo').__len__() == 0:
+            self.codigo = 1000
+        else:
+            self.codigo = MovimientoStock.objects.order_by('codigo').last().codigo + 1
+        super(MovimientoStock, self).save()
+
+class MovimientoStockDetalle(models.Model):
+    cantidad = models.IntegerField()
+    precio_unitario = models.FloatField()
+    subtotal = models.FloatField()
+
+    movimiento_stock = models.ForeignKey(MovimientoStock, db_column='id_movimiento_stock')
+    producto = models.ForeignKey(Producto, db_column='id_producto')
+
+    def as_json(self):
+        return dict(
+            cantidad=self.cantidad,
+            precio_unitario=self.precio_unitario,
+            subtotal = self.subtotal,
+            producto=self.producto.as_json(),
+            movimiento_stock=self.movimiento_stock.as_json()
+        )
+
+class EstadoTipoMovimientoCapital(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Tipo Movimiento de Capital: " + self.nombre
+
+class TipoMovimientoCapital(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=60)
+    descripcion = models.CharField(max_length=60)
+
+    estado = models.ForeignKey(EstadoTipoMovimientoCapital, db_column='id_estado')
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre = self.nombre,
+            descripcion = self.descripcion,
+            estado = self.estado.id
+        )
+
+class EstadoFormaPago(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Forma de Pago: " + self.nombre
+
+class FormaPago(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    estado = models.ForeignKey(EstadoFormaPago, db_column= 'id_estado')
+
+    def as_json(self):
+        return dict(
+            nombre = self.nombre,
+            descripcion = self.descripcion,
+            estado = self.estado.id
+        )
+
+
+class CaracteristicasFormaPago(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=60, null=True)
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre=self.nombre,
+            descripcion=self.descripcion
+        )
+
+class DetalleCaracteristicasFormaPago(models.Model):
+    valor_caracteristica = models.CharField(max_length=60)
+
+    forma_pago = models.ForeignKey(FormaPago,db_column= 'id_forma_pago')
+    caracteristicas_forma_pago = models.ForeignKey(CaracteristicasFormaPago, db_column='id_caracteristica')
+
+    def as_json(self):
+        return dict(
+            valor = self.valor_caracteristica,
+            forma_pago = self.forma_pago.id,
+            caracteristicas_forma_pago = self.caracteristicas_forma_pago.codigo
+        )
+
+
+class EstadoMovimientoCapital(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Movimiento de Capital: " + self.nombre
+
+
+class MovimientoCapital(models.Model):
+    codigo = models.IntegerField(primary_key=True, default =1000)
+    total = models.FloatField()
+    fecha_creacion = models.DateTimeField()
+
+    tipo_movimiento = models.ForeignKey(TipoMovimientoCapital, db_column= 'id_tipo_movimiento')
+    estado = models.ForeignKey(EstadoTipoMovimientoCapital, db_column= 'id_estado')
+    movimiento_stock = models.ForeignKey(MovimientoStock, db_column= 'id_movimiento_stock', null=True)
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            total = self.total,
+            fecha_creacion = self.fecha_creacion,
+            estado = self.estado.id,
+            tipo_movimiento = self.tipo_movimiento.codigo,
+            movimiento_stock = self.movimiento_stock.codigo,
+            forma_pago = self.forma_pago.codigo
+        )
+
+class EstadoCaja(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Caja: " + self.nombre
+
+
+class Caja(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    total_apertura = models.FloatField()
+    total_cierre = models.FloatField()
+    fecha_apertura = models.DateTimeField()
+    fecha_cierre = models.DateTimeField()
+
+    estado = models.ForeignKey(EstadoCaja, db_column= 'id_estado')
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            total_apertura = self.total_apertura,
+            total_cierre =self.total_cierre,
+            fecha_apertura = self.fecha_apertura,
+            fecha_cierre = self.fecha_cierre,
+            estado = self.estado.id
+        )
+
+
+class CajaDetalle(models.Model):
+    total = models.FloatField()
+    fecha_creacion = models.DateTimeField()
+
+    movimiento_capital = models.ForeignKey(MovimientoCapital, db_column='id_movimiento')
+    caja = models.ForeignKey(Caja, db_column='id_caja')
+
+    def as_json(self):
+        return dict(
+            id = self.id,
+            fecha_creacion = self.fecha_creacion,
+            movimiento_capital = self.movimiento_capital.as_json(),
+            caja = self.caja.as_json()
         )
