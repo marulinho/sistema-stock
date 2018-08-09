@@ -25,9 +25,11 @@ class DTOCombo:
         )
 
 class DTOComboDetalle:
-    def __init__(self, codigo_producto, nombre_producto, precio_unitario, margen_ganancia, cantidad):
+    def __init__(self, codigo_producto, nombre_producto, nombre_medida, medida, precio_unitario, margen_ganancia, cantidad):
         self.codigo = codigo_producto
         self.nombre = nombre_producto
+        self.nombre_medida = nombre_medida
+        self.medida = medida
         self.precio = precio_unitario
         self.margen_ganancia = margen_ganancia
         self.cantidad = cantidad
@@ -35,7 +37,9 @@ class DTOComboDetalle:
     def as_json(self):
         return dict(
             codigo_producto=self.codigo,
-            nombre_prpoducto=self.nombre,
+            nombre_producto=self.nombre,
+            medida = self.medida,
+            nombre_medida = self.nombre_medida,
             precio_producto=self.precio,
             margen_ganancia = self.margen_ganancia,
             cantidad = self.cantidad

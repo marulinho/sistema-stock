@@ -205,6 +205,8 @@ def obtener_combos_vigentes(request):
             for y in range(0, detalle_combo.__len__()):
                 dto_combo_detalle = DTOComboDetalle(detalle_combo[y].producto.codigo,
                                                     detalle_combo[y].producto.nombre,
+                                                    detalle_combo[y].producto.unidad_medida.nombre,
+                                                    detalle_combo[y].producto.medida,
                                                     detalle_combo[y].precio_unitario_producto_combo,
                                                     detalle_combo[y].margen_ganancia_producto_combo,
                                                     detalle_combo[y].cantidad)
