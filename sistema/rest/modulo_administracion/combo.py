@@ -88,10 +88,10 @@ def registrar_combo(request):
 
                     #obtengo el precio del producto
 
-                    if ListaPrecioDetalle.objects.filter(producto = producto_ingresado).__len__()<1:
+                    if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio, producto = producto_ingresado).__len__()<1:
                         raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE_LISTA)
                     else:
-                        precio_producto = ListaPrecioDetalle.objects.get(producto = producto_ingresado).precio_unitario_compra
+                        precio_producto = ListaPrecioDetalle.objects.get(lista_precio = lista_precio, producto = producto_ingresado).precio_unitario_compra
 
                     combo_detalle_creado = ComboDetalle(cantidad=cantidad_productos[x],
                                                         precio_unitario_producto_combo = precio_producto,
@@ -135,7 +135,7 @@ def eliminar_combo(request):
             if Combo.objects.filter(codigo=codigo, estado=estado_combo_habilitado).__len__() < 1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE)
 
-            estado_combo_deshabilitado = EstadoCombo.objects.get(nonbre=ESTADO_DESHABILITADO)
+            estado_combo_deshabilitado = EstadoCombo.objects.get(nombre=ESTADO_DESHABILITADO)
             combo_ingresado = Combo.objects.get(codigo=codigo, estado=estado_combo_habilitado)
             combo_ingresado.estado = estado_combo_deshabilitado
             combo_ingresado.save()
@@ -154,7 +154,7 @@ def eliminar_combo(request):
 
 @transaction.atomic()
 @metodos_requeridos([METODO_GET])
-def obtener_detalle_combo(request, id_combo):
+def obtener_combo_id(request, id_combo):
     try:
         response = HttpResponse()
         if id_combo != '':
@@ -167,8 +167,28 @@ def obtener_detalle_combo(request, id_combo):
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE)
 
         combo_ingresado = Combo.objects.get(codigo=codigo, estado=estado_combo_habilitado)
-        combo_detalles = ComboDetalle.objects.filter(combo=combo_ingresado)
-        response.content = armar_response_list_content(combo_detalles)
+
+        dto_cabecera_combo = DTOCombo(combo_ingresado.codigo,
+                                      combo_ingresado.nombre,
+                                      combo_ingresado.precio)
+
+        if ComboDetalle.objects.filter(combo=combo_ingresado).__len__()<1:
+            raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_COMBO_SIN_DETALLE)
+        else:
+            combo_detalle = ComboDetalle.objects.filter(combo=combo_ingresado)
+        dto_lista_detalle_combo = []
+        for x in range(0,combo_detalle.__len__()):
+            dto_combo_detalle = DTOComboDetalle(combo_detalle[x].producto.codigo,
+                                                combo_detalle[x].producto.nombre,
+                                                combo_detalle[x].producto.marca,
+                                                combo_detalle[x].producto.unidad_medida.nombre,
+                                                combo_detalle[x].producto.medida,
+                                                combo_detalle[x].precio_unitario_producto_combo,
+                                                combo_detalle[x].margen_ganancia_producto_combo,
+                                                combo_detalle[x].cantidad)
+            dto_lista_detalle_combo.append(dto_combo_detalle)
+        dto_lista_combo = DTOListaCombo(dto_cabecera_combo,dto_lista_detalle_combo)
+        response.content = armar_response_content(dto_lista_combo)
         response.status_code = 200
         return response
 
@@ -205,6 +225,7 @@ def obtener_combos_vigentes(request):
             for y in range(0, detalle_combo.__len__()):
                 dto_combo_detalle = DTOComboDetalle(detalle_combo[y].producto.codigo,
                                                     detalle_combo[y].producto.nombre,
+                                                    detalle_combo[y].producto.marca,
                                                     detalle_combo[y].producto.unidad_medida.nombre,
                                                     detalle_combo[y].producto.medida,
                                                     detalle_combo[y].precio_unitario_producto_combo,
@@ -218,6 +239,108 @@ def obtener_combos_vigentes(request):
         response.status_code = 200
         return response
 
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def modificar_combo(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if CODIGO in datos and not CODIGO == '':
+                codigo_combo = datos[CODIGO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMBO_FALTANTE)
+
+            if NOMBRE in datos and not (NOMBRE == ''):
+                nombre = lower(datos[NOMBRE])
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_NOMBRE_COMBO_FALTANTE)
+
+            if LISTA_PRODUCTOS in datos and not (LISTA_PRODUCTOS == []):
+                lista_productos = datos[LISTA_PRODUCTOS]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE)
+            if lista_productos.__len__() < 2:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_LONGITUD_INSUFICIENTE)
+            if list(duplicates(lista_productos)):
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS)
+
+            if CANTIDAD_PRODUCTOS in datos and not (CANTIDAD_PRODUCTOS == []):
+                cantidad_productos = datos[CANTIDAD_PRODUCTOS]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE)
+            for x in range(0, cantidad_productos.__len__()):
+                if cantidad_productos[x] <= 0:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_MENOR)
+
+            if MARGEN_GANANCIA_PRODUCTO_COMBO in datos and not (MARGEN_GANANCIA_PRODUCTO_COMBO == []):
+                margen_ganancia_productos_combo = datos[MARGEN_GANANCIA_PRODUCTO_COMBO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRECIO_PRODUCTOS_COMBO_FALTANTE)
+
+            for x in range(0, margen_ganancia_productos_combo.__len__()):
+                if margen_ganancia_productos_combo[x] <= 0:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_MARGEN_GANANCIA_PRODUCTOS_COMBO_MENOR)
+
+            if (cantidad_productos.__len__() != lista_productos.__len__()) or (cantidad_productos.__len__() != margen_ganancia_productos_combo.__len__()) or (margen_ganancia_productos_combo.__len__() != lista_productos.__len__()):
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_LISTA_PRODUCTO_COMBO_LONGITUD_DISTINTA)
+
+            estado_combo_habilitado = EstadoCombo.objects.get(nombre=ESTADO_HABILITADO)
+            if Combo.objects.filter(codigo = codigo_combo, estado = estado_combo_habilitado).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE)
+            else:
+                combo_actual = Combo.objects.get(codigo = codigo_combo, estado = estado_combo_habilitado)
+
+            if Combo.objects.filter(nombre=nombre, estado=estado_combo_habilitado).__len__() > 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_NOMBRE_COMBO_EXISTENTE)
+
+            estado_habilitado_lista_precio = EstadoListaPrecio.objects.get(nombre=ESTADO_HABILITADO)
+            if ListaPrecio.objects.filter(vigencia_hasta=None, estado=estado_habilitado_lista_precio).__len__() < 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA)
+
+            lista_precio = ListaPrecio.objects.get(vigencia_hasta=None,estado=estado_habilitado_lista_precio)
+            if ListaPrecioDetalle.objects.filter(lista_precio=lista_precio).__len__() <1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
+
+            # verificamos que existan los productos y creamos los combos_detalle
+            estado_producto_habilitado = EstadoProducto.objects.get(nombre=ESTADO_HABILITADO)
+
+            precio = 0
+            for x in range(0, lista_productos.__len__()):
+
+                if Producto.objects.filter(codigo=lista_productos[x], estado=estado_producto_habilitado).__len__() < 1:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_INEXISTENTE)
+                else:
+                    producto_ingresado = Producto.objects.get(codigo=lista_productos[x],estado=estado_producto_habilitado)
+
+                if ComboDetalle.objects.filter(combo = combo_actual, producto= producto_ingresado).__len__()<1:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMBO_DETALLE_INEXISTENTE)
+                else:
+                    combo_detalle =  ComboDetalle.objects.get(combo = combo_actual, producto= producto_ingresado)
+
+                    combo_detalle.cantidad = cantidad_productos[x]
+                    combo_detalle.margen_ganancia_producto_combo = margen_ganancia_productos_combo[x]
+                    combo_detalle.subtotal =  (combo_detalle.precio_unitario_producto_combo * (1+margen_ganancia_productos_combo[x])) * cantidad_productos[x]
+                    precio += combo_detalle.subtotal
+                    combo_detalle.save()
+            combo_actual.precio = precio
+            combo_actual.nombre = nombre
+            combo_actual.save()
+            response.content = armar_response_content(None, MODIFICACION_COMBO)
+            response.status_code = 200
+            return response
     except ValueError as err:
         print err.args
         return build_bad_request_error(response, err.args[0], err.args[1])

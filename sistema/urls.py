@@ -74,7 +74,8 @@ urlpatterns = [
     #COMBO
     url(r'^registrarCombo/$', combo.registrar_combo, name='registrarCombo'),
     url(r'^eliminarCombo/$', combo.eliminar_combo, name='eliminarCombo'),
-    url(r'^obtenerDetalleCombo/(?P<id_combo>[0-9]+)/$', combo.obtener_detalle_combo, name='obtenerDetalleCombo'),
+    url(r'^modificarCombo/$', combo.modificar_combo, name='modificarCombo'),
+    url(r'^obtenerComboId/(?P<id_combo>[0-9]+)/$', combo.obtener_combo_id, name='obtenerComboId'),
     url(r'^obtenerCombosVigentes/$', combo.obtener_combos_vigentes, name='obtenerCombosVigentes'),
 
     #LISTA_PRECIO

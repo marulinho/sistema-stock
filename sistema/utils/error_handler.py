@@ -104,7 +104,8 @@ DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA = 'No hay listas de precios habilitadas
 DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE = 'La lista de precios no tiene detalles'
 DETALLE_ERROR_PRODUCTO_INEXISTENTE_LISTA = 'No existe el producto en la lista de precios'
 DETALLE_ERROR_PRODUCTOS_DESHABILITADOS = 'No existen productos habilitados'
-
+DETALLE_ERROR_COMBO_DETALLE_INEXISTENTE = 'No existe un detalle asociado al producto'
+DETALLE_ERROR_COMBO_SIN_DETALLE = 'El combo no tiene detalles'
 
 # Metodos
 

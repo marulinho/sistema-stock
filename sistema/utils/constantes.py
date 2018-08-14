@@ -28,6 +28,7 @@ MODIFICACION_PRODUCTO = 'Producto modificado exitosamente'
 ELIMINACION_PRODUCTO = 'Producto eliminado exitosamente'
 CREACION_COMBO = 'Combo creado exitosamente'
 ELIMINACION_COMBO = 'Combo eliminado exitosamente'
+MODIFICACION_COMBO = 'Combo modificado exitosamente'
 CREACION_LISTA_PRECIO = 'Lista de Precios creada exitosamente'
 ELIMINACION_LISTA_PRECIO = 'Lista de Precios eliminada exitosamente'
 
