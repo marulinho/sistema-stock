@@ -349,3 +349,60 @@ def modificar_combo(request):
         print err.args
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def actualizar_precio_combo(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            estado_combo_habilitado = EstadoCombo.objects.get(nombre=ESTADO_HABILITADO)
+            if Combo.objects.filter(estado=estado_combo_habilitado).__len__() < 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMBO_NO_HABILITADO)
+
+            estado_habilitado_lista_precio = EstadoListaPrecio.objects.get(nombre=ESTADO_HABILITADO)
+            if ListaPrecio.objects.filter(vigencia_hasta=None, estado=estado_habilitado_lista_precio).__len__() < 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA)
+
+            lista_precio = ListaPrecio.objects.get(vigencia_hasta=None,estado=estado_habilitado_lista_precio)
+            if ListaPrecioDetalle.objects.filter(lista_precio=lista_precio).__len__() <1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
+
+            combos_habilitados = Combo.objects.filter(estado=estado_combo_habilitado)
+
+            for x in range(combos_habilitados.__len__()):
+                combo_detalles = ComboDetalle.objects.filter(combo = combos_habilitados[x])
+                precio_combo = 0
+                for y in range(combo_detalles.__len__()):
+                    if Producto.objects.filter(codigo = combo_detalles[y].producto.codigo).__len__()<1:
+                        raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_INEXISTENTE)
+                    producto_combo_detalle = Producto.objects.get(codigo = combo_detalles[y].producto.codigo)
+
+                    #buscamos el precio actual del producto
+                    if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio, producto = producto_combo_detalle).__len__()<1:
+                        combo_detalles[y].precio_unitario_producto_combo = 0
+                    else:
+                        lista_precio_producto = ListaPrecioDetalle.objects.get(lista_precio = lista_precio, producto = producto_combo_detalle)
+                        combo_detalles[y].precio_unitario_producto_combo = lista_precio_producto.precio_unitario_compra
+                    combo_detalles[y].subtotal = combo_detalles[y].precio_unitario_producto_combo * combo_detalles[y].cantidad
+                    precio_combo += combo_detalles[y].subtotal
+                    combo_detalles[y].save()
+                combos_habilitados[x].precio = precio_combo
+                combos_habilitados[x].save()
+
+            response.content = armar_response_content(None, PRECIO_COMBO_ACTUALIZADO)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+

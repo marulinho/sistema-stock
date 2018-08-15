@@ -7,6 +7,9 @@ METODO_DELETE = 'DELETE'
 #Estados Entidades
 ESTADO_HABILITADO = 'Habilitado'
 ESTADO_DESHABILITADO = 'Deshabilitado'
+ESTADO_CREADO = 'Creado'
+ESTADO_CANCELADO = 'Cancelado'
+ESTADO_PAGADO = 'Pagado'
 
 #Constantes Api call
 KEY_RESULTADO_OPERACION = 'resultado'
@@ -29,8 +32,11 @@ ELIMINACION_PRODUCTO = 'Producto eliminado exitosamente'
 CREACION_COMBO = 'Combo creado exitosamente'
 ELIMINACION_COMBO = 'Combo eliminado exitosamente'
 MODIFICACION_COMBO = 'Combo modificado exitosamente'
+PRECIO_COMBO_ACTUALIZADO = 'Precio actualizado exitosamente'
 CREACION_LISTA_PRECIO = 'Lista de Precios creada exitosamente'
 ELIMINACION_LISTA_PRECIO = 'Lista de Precios eliminada exitosamente'
+CREACION_COMPRA = 'Compra creada exitosamente'
+CANCELACION_COMPRA = 'Compra cancelada exitosamente'
 
 #Constantes Models
 #Generales
@@ -75,3 +81,8 @@ LISTA_PRECIOS_VENTA = 'lista_precios_venta'
 #Unidad Medida
 NOMBRE_UNIDAD_MEDIDA  = 'nombre_unidad_medida'
 ID_UNIDAD_MEDIDA = 'id_unidad_medida'
+
+#Movimientos
+MOVIMIENTO_COMPRA = 'Compra'
+MOVIMIENTO_VENTA = 'Venta'
+DESCUENTO = 'descuento'

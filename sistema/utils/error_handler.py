@@ -82,6 +82,7 @@ DETALLE_ERROR_LISTA_PRODUCTO_COMBO_LONGITUD_INSUFICIENTE = 'Debe ingresar dos o 
 DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE = 'Debe ingresar una cantidad para cada producto la lista'
 DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS = 'No se puede ingresar dos o más veces el mismo producto'
 DETALLE_ERROR_CANTIDAD_LISTA_PRODUCTO_COMBO_LONGITUD_DISTINTA = 'Debe ingresar una cantidad y precio por cada producto seleccionado'
+DETALLE_ERROR_CANTIDAD_LISTA_PRODUCTO_COMPRA_LONGITUD_DISTINTA = 'Debe ingresar una cantidad para cada producto'
 DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_MENOR = 'Debe ingresar cantidades mayores a cero'
 DETALLE_ERROR_CODIGO_COMBO_FALTANTE = 'Debe ingresar el codigo del combo'
 DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE = 'No existe un combo con el codigo ingresado'
@@ -106,6 +107,9 @@ DETALLE_ERROR_PRODUCTO_INEXISTENTE_LISTA = 'No existe el producto en la lista de
 DETALLE_ERROR_PRODUCTOS_DESHABILITADOS = 'No existen productos habilitados'
 DETALLE_ERROR_COMBO_DETALLE_INEXISTENTE = 'No existe un detalle asociado al producto'
 DETALLE_ERROR_COMBO_SIN_DETALLE = 'El combo no tiene detalles'
+DETALLE_ERROR_COMBO_NO_HABILITADO = 'No existen combos habilitados'
+DETALLE_ERROR_COMPRA_INEXISTENTE = 'No existe una compra con el codigo ingresado'
+DETALLE_ERROR_COMPRA_SIN_DETALLE = 'La compra no tiene asociado detalles'
 
 # Metodos
 

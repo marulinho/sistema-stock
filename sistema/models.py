@@ -298,27 +298,19 @@ class ListaPrecioDetalle(models.Model):
             lista_precio = self.lista_precio.as_json()
         )
 
-class EstadoTipoMovimientoStock(models.Model):
-    nombre = models.CharField(max_length=20)
-    descripcion = models.CharField(max_length=50)
-
-    def __str__(self):
-        return "Estado Tipo Movimiento de Stock: " + self.nombre
-
 class TipoMovimientoStock(models.Model):
     codigo = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=60)
     descripcion = models.CharField(max_length=60)
-
-    estado = models.ForeignKey(EstadoTipoMovimientoStock, db_column='id_estado')
 
     def as_json(self):
         return dict(
             codigo = self.codigo,
             nombre = self.nombre,
             descripcion = self.descripcion,
-            estado = self.estado.id
         )
+    def __str__(self):
+        return "Tipo Movimiento de Stock: " + self.nombre
 
 class EstadoMovimientoStock(models.Model):
     nombre = models.CharField(max_length=20)

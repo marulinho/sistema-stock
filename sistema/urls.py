@@ -9,6 +9,7 @@ from sistema.rest.modulo_administracion import producto
 from sistema.rest.modulo_administracion import unidad_medida
 from sistema.rest.modulo_administracion import combo
 from sistema.rest.modulo_administracion import lista_precio
+from sistema.rest.modulo_finanzas import compra
 
 urlpatterns = [
 
@@ -77,10 +78,16 @@ urlpatterns = [
     url(r'^modificarCombo/$', combo.modificar_combo, name='modificarCombo'),
     url(r'^obtenerComboId/(?P<id_combo>[0-9]+)/$', combo.obtener_combo_id, name='obtenerComboId'),
     url(r'^obtenerCombosVigentes/$', combo.obtener_combos_vigentes, name='obtenerCombosVigentes'),
+    url(r'^actualizarPrecioCombo/$', combo.actualizar_precio_combo, name='actualizarPrecioCombo'),
 
     #LISTA_PRECIO
     url(r'^registrarListaPrecio/$', lista_precio.registrar_lista_precio, name='registrarListaPrecio'),
     url(r'^eliminarListaPrecio/$', lista_precio.eliminar_lista_precio, name='eliminarListaPrecio'),
     url(r'^obtenerListaPrecioVigente/$', lista_precio.obtener_lista_precio, name='obtenerListaPrecioVigente'),
     url(r'^obtenerProductosNoListaVigente/$', lista_precio.obtener_productos_no_lista_precio, name='obtenerProductosNoListaVigente'),
+
+    # MOVIMIENTO_STOCK_COMPRA
+    url(r'^registrarCompra/$', compra.registrar_compra, name='registrarCompra'),
+    url(r'^cancelarCompra/(?P<id_compra>[0-9]+)/$', compra.cancelar_compra, name='cancelarCompra'),
+
 ]

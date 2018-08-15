@@ -63,6 +63,8 @@ def registrar_producto(request):
                                             marca = marca,
                                             medida = medida,
                                             unidad_medida = unidad_medida,
+                                            stock_deposito= 0,
+                                            stock_local= 0,
                                             estado = estado_habilitado_producto)
                 producto_creado.saveNewProducto()
                 response.content = armar_response_content(None, CREACION_PRODUCTO)
