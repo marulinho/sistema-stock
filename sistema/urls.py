@@ -10,6 +10,8 @@ from sistema.rest.modulo_administracion import unidad_medida
 from sistema.rest.modulo_administracion import combo
 from sistema.rest.modulo_administracion import lista_precio
 from sistema.rest.modulo_finanzas import compra
+from sistema.rest.modulo_finanzas import remito
+from sistema.rest.modulo_finanzas import caja
 
 urlpatterns = [
 
@@ -89,5 +91,21 @@ urlpatterns = [
     # MOVIMIENTO_STOCK_COMPRA
     url(r'^registrarCompra/$', compra.registrar_compra, name='registrarCompra'),
     url(r'^cancelarCompra/(?P<id_compra>[0-9]+)/$', compra.cancelar_compra, name='cancelarCompra'),
+    url(r'^pagarCompra/(?P<id_compra>[0-9]+)/$', compra.pagar_compra, name='pagarCompra'),
+    url(r'^generarMovimientoSalidaCapitalStock/$', compra.generar_movimiento_capital_compra_movimiento_stock, name='generarMovimientoSalidaCapitalStock'),
+    url(r'^generarMovimientoSalidaCapital/$', compra.generar_movimiento_capital_compra, name='generarMovimientoSalidaCapital'),
+    url(r'^cancelarMovimientoSalidaCapital/(?P<id_compra>[0-9]+)/$', compra.cancelar_movimiento_capital_compra, name='cancelarMovimientoSalidaCapital'),
+    url(r'^cancelarMovimientoSalidaCapital/(?P<id_compra>[0-9]+)/$', compra.cancelar_movimiento_capital_compra, name='cancelarMovimientoSalidaCapital'),
+
+
+    #CAJA
+    url(r'^abrirCaja/$', caja.abrir_caja, name='abrirCaja'),
+    url(r'^cerrarCaja/$', caja.cerrar_caja, name='cerrarCaja'),
+    url(r'^obtenerCaja/$', caja.obtener_ultima_caja, name='obtenerCaja'),
+    url(r'^generarDetalleCaja/$', caja.generar_detalle_caja, name='generarDetalleCaja'),
+
+    # MOVIMIENTO_STOCK_REMITO
+    url(r'^registrarRemito/$', remito.registrar_remito, name='registrarRemito'),
+    url(r'^cancelarRemito/(?P<id_compra>[0-9]+)/$', remito.cancelar_remito, name='cancelarRemito'),
 
 ]

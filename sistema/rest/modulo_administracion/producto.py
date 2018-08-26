@@ -56,6 +56,9 @@ def registrar_producto(request):
                                        marca = marca,
                                        medida = medida,
                                        unidad_medida = unidad_medida,
+                                       stock_local = 0,
+                                       stock_deposito = 0,
+                                       stock_minimo = 0,
                                        estado = estado_habilitado_producto).__len__() >=1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_EXISTENTE)
             else:

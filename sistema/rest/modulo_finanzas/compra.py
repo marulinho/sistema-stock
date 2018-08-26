@@ -17,7 +17,7 @@ from sistema.utils.error_handler import *
 
 
 @transaction.atomic()
-@metodos_requeridos([METODO_PUT])
+@metodos_requeridos([METODO_POST])
 def registrar_compra(request):
     try:
         datos = obtener_datos_json(request)
@@ -157,6 +157,175 @@ def cancelar_compra(request,id_compra):
             movimiento_compra.estado = estado_cancelado_compra
             movimiento_compra.save()
             response.content = armar_response_content(None, CANCELACION_COMPRA)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def pagar_compra(request,id_compra):
+    try:
+        response = HttpResponse()
+
+        if id_compra == '':
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+
+            estado_creado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_CREADO)
+            tipo_movimiento_stock = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_COMPRA)
+
+            if MovimientoStock.objects.filter(codigo = id_compra, estado = estado_creado_compra, tipo_movimiento= tipo_movimiento_stock).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_COMPRA_INEXISTENTE)
+
+            movimiento_compra = MovimientoStock.objects.get(codigo = id_compra, estado = estado_creado_compra, tipo_movimiento= tipo_movimiento_stock)
+
+            estado_pagado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_PAGADO)
+            movimiento_compra.estado = estado_pagado_compra
+            movimiento_compra.save()
+            response.content = armar_response_content(None, PAGO_COMPRA)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+
+@transaction.atomic()
+@metodos_requeridos([METODO_POST])
+def generar_movimiento_capital_compra_movimiento_stock(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if CODIGO in datos and not (CODIGO == ''):
+                id_compra = datos[CODIGO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMPRA_FALTANTE)
+
+            salida_movimiento_capital = TipoMovimientoCapital.objects.get(nombre = MOVIMIENTO_SALIDA_CAPITAL)
+
+            estado_compra_pagado = EstadoMovimientoStock.objects.get(nombre = ESTADO_PAGADO)
+
+            if MovimientoStock.objects.filter(codigo = id_compra, estado = estado_compra_pagado).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMPRA_INEXISTENTE)
+
+            movimiento_compra = MovimientoStock.objects.get(codigo = id_compra, estado = estado_compra_pagado)
+
+            estado_movimiento_capital_pagado = EstadoMovimientoCapital.objects.get(nombre = ESTADO_PAGADO)
+
+            forma_pago = FormaPago.objects.get(nombre = FORMA_PAGO_EFECTIVO) #Por defecto la forma de pago siempre es efectivo
+
+            movimiento_capital_salida = MovimientoCapital(total = movimiento_compra.total_final,
+                                                          fecha_creacion = datetime.datetime.now(pytz.utc),
+                                                          descripcion_movimiento = (PAGO_MOVIMIENTO_CAPITAL.append(str(movimiento_compra.codigo))),
+                                                          tipo_movimiento = salida_movimiento_capital,
+                                                          estado = estado_movimiento_capital_pagado,
+                                                          movimiento_stock = movimiento_compra,
+                                                          forma_pago = forma_pago
+                                                          )
+            movimiento_capital_salida.saveNewMovimientoCapital()
+            response.content = armar_response_content(None, CREACION_MOVIMIENTO_CAPITAL_SALIDA)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+
+@transaction.atomic()
+@metodos_requeridos([METODO_POST])
+def generar_movimiento_capital_compra(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if datos == {}:
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            if DESCRIPCION in datos and not (DESCRIPCION == ''):
+                descripcion = datos[DESCRIPCION]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_DESCRIPCION_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE)
+
+            if TOTAL in datos and not (TOTAL == ''):
+                total = datos[TOTAL]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_TOTAL_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE)
+
+            if total <= 0:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_TOTAL_MOVIMIENTO_CAPITAL_SALIDA_INSUFICIENTE)
+
+            salida_movimiento_capital = TipoMovimientoCapital.objects.get(nombre = MOVIMIENTO_SALIDA_CAPITAL)
+
+            estado_movimiento_capital_pagado = EstadoMovimientoCapital.objects.get(nombre = ESTADO_PAGADO)
+
+            forma_pago = FormaPago.objects.get(nombre = FORMA_PAGO_EFECTIVO) #Por defecto la forma de pago siempre es efectivo
+
+            movimiento_capital_salida = MovimientoCapital(total = total,
+                                                          fecha_creacion = datetime.datetime.now(pytz.utc),
+                                                          descripcion_movimiento = descripcion,
+                                                          tipo_movimiento = salida_movimiento_capital,
+                                                          estado = estado_movimiento_capital_pagado,
+                                                          movimiento_stock = None,
+                                                          forma_pago = forma_pago
+                                                          )
+            movimiento_capital_salida.saveNewMovimientoCapital()
+            response.content = armar_response_content(None, CREACION_MOVIMIENTO_CAPITAL_SALIDA)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def cancelar_movimiento_capital_compra(request,id_movimiento_salida):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if id_movimiento_salida == '':
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE)
+        else:
+            estado_movimiento_capital_pagado = EstadoMovimientoCapital.objects.get(nombre=ESTADO_PAGADO)
+
+            if MovimientoCapital.objects.filter(codigo=id_movimiento_salida,
+                                                estado=estado_movimiento_capital_pagado,
+                                                movimiento_stock=None).__len__() < 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_MOVIMIENTO_SALIDA_CAPITAL_INEXISTENTE)
+
+            movimiento_capital = MovimientoCapital.objects.get(codigo=id_movimiento_salida, estado=estado_movimiento_capital_pagado)
+
+            estado_movimiento_capital_cancelado = EstadoMovimientoCapital.objects.get(nombre=ESTADO_CANCELADO)
+
+            movimiento_capital.estado = estado_movimiento_capital_cancelado
+            movimiento_capital.save()
+            response.content = armar_response_content(None, CANCELACION_MOVIMIENTO_CAPITAL_SALIDA)
             response.status_code = 200
             return response
     except ValueError as err:
