@@ -378,6 +378,9 @@ class TipoMovimientoCapital(models.Model):
             descripcion = self.descripcion
         )
 
+    def __str__(self):
+        return "TipoMovimientoCapital: " + self.nombre
+
 class EstadoFormaPago(models.Model):
     nombre = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=50)
@@ -398,6 +401,8 @@ class FormaPago(models.Model):
             estado = self.estado.id
         )
 
+    def __str__(self):
+        return "Forma de Pago: " + self.nombre
 
 class CaracteristicasFormaPago(models.Model):
     codigo = models.IntegerField(primary_key=True)
@@ -453,8 +458,9 @@ class MovimientoCapital(models.Model):
             estado = self.estado.id,
             tipo_movimiento = self.tipo_movimiento.codigo,
             movimiento_stock = self.movimiento_stock.codigo,
-            forma_pago = self.forma_pago.codigo
+            forma_pago = self.forma_pago.id
         )
+
     def saveNewMovimientoCapital(self):
         if MovimientoCapital.objects.order_by('codigo').__len__()==0:
             self.codigo = 1000

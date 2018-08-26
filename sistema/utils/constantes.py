@@ -77,6 +77,7 @@ ID_SUBCATEGORIA  = 'id_subcategoria'
 
 #Producto
 ID_PRODUCTO = 'id_producto'
+STOCK_MINIMO = 'stock_minimo'
 
 #Combo
 PRECIO = 'precio'
@@ -106,3 +107,4 @@ FORMA_PAGO_TARJETA_DEBITO = 'Tarjeta_Debito'
 DESCUENTO = 'descuento'
 PAGO_MOVIMIENTO_CAPITAL = 'Compra nro: '
 TOTAL = 'total'
+ESTADO = 'estado'

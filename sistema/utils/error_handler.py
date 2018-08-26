@@ -61,6 +61,8 @@ DETALLE_ERROR_UNIDAD_MEDIDA_PRODUCTO_INEXISTENTE = 'No existe la unidad de medid
 DETALLE_ERROR_UNIDAD_MEDIDA_HABILITADA = 'No existen unidades de medidas habilitadas'
 DETALLE_ERROR_ID_UNIDAD_MEDIDA_FALTANTE = 'Debe ingresar el identificador de la unidad de medida'
 DETALLE_ERROR_ID_UNIDAD_MEDIDA_INEXISTENTE = 'No existe una unidad de medida con el identificador ingresado'
+DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_FALTANTE = 'Debe ingresar el stock minimo del producto'
+DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_INSUFICIENTE = 'El stock minimo debe ser mayor que cero'
 DETALLE_ERROR_NOMBRE_SUBCATEGORIA_EXISTENTE = 'El nombre de subcategoria ya existe, intente con otro'
 DETALLE_ERROR_CODIGO_SUBCATEGORIA_FALTANTE = 'Debe ingresar el codigo de la subcategoria'
 DETALLE_ERROR_NOMBRE_SUBCATEGORIA_FALTANTE = 'Debe ingresar el nombre de la subcategoria'
@@ -130,7 +132,9 @@ DETALLE_ERROR_CAJA_SIN_DETALLES = 'La caja no tiene detalles'
 DETALLE_ERROR_NO_HAY_CAJA = 'No existen cajas'
 DETALLE_ERROR_COMPRAS_INEXISTENTES = 'No ha realizado compras'
 DETALLE_ERROR_CODIGO_COMPRA_FALTANTE = 'Debe ingresar el codigo de la compra'
-
+DETALLE_ERROR_STOCK_INSUFICIENTE_CANCELAR_COMPRA = 'No dispone del stock suficiente para cancelar la compra'
+DETALLE_ERROR_MOVIMIENTO_CAPITAL_EXISTENTE = 'Ya existe un movimiento de salida de capital asociado al movimiento de stock'
+DETALLE_ERROR_ESTADO_INEXISTENTE = 'No existe un estado con el nombre ingresado'
 # Metodos
 
 def build_error(response, error_code, error_descripcion):

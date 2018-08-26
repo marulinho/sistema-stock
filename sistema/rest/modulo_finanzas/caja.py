@@ -160,21 +160,21 @@ def obtener_ultima_caja(request):
                                             caja.total_apertura,
                                             caja.total_cierre,
                                             caja.estado.nombre)
+        dto_list_caja_detalle = []
         if CajaDetalle.objects.filter(caja = caja).__len__()>=1:
             caja_detalles = CajaDetalle.objects.filter(caja = caja)
-            dto_list_caja_detalle = []
-            for x in range(0,caja_detalles.__len__):
-                dto_caja_detalle = DTOCajaDetalle(caja_detalles[x].fecha_creacion,
-                                                  caja_detalles[x].total,
-                                                  caja_detalles[x].movimiento_capital.tipo_movimiento.nombre,
-                                                  caja_detalles[x].movimiento_capital.descripcion_movimiento
-                                                 )
-                dto_list_caja_detalle.append(dto_caja_detalle)
+            for x in range(0, caja_detalles.__len__()):
+                if(caja_detalles[x].movimiento_capital.estado.nombre == ESTADO_PAGADO):
+                    dto_caja_detalle = DTOCajaDetalle(caja_detalles[x].fecha_creacion,
+                                                      caja_detalles[x].total,
+                                                      caja_detalles[x].movimiento_capital.tipo_movimiento.nombre,
+                                                      caja_detalles[x].movimiento_capital.descripcion_movimiento
+                                                     )
+                    dto_list_caja_detalle.append(dto_caja_detalle)
             dto_caja = DTOCaja(dto_caja_cabecera,dto_list_caja_detalle)
-            response = armar_response_list_content(dto_caja)
         else:
-            dto_caja = DTOCaja(dto_caja_cabecera)
-            response.content = armar_response_content(dto_caja)
+            dto_caja = DTOCaja(dto_caja_cabecera,dto_list_caja_detalle)
+        response.content = armar_response_content(dto_caja)
         response.status_code = 200
         return response
     except ValueError as err:

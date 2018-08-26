@@ -53,8 +53,8 @@ class DTOListaMovimientoStock:
 
     def as_json(self):
         return dict(
-            combo_cabecera= self.dto_movimiento_stock.as_json(),
-            combo_detalles= [detalle.as_json() for
+            compra_cabecera= self.dto_movimiento_stock.as_json(),
+            compra_detalles= [detalle.as_json() for
                              detalle in self.dto_detalle]
         )
 
@@ -104,10 +104,36 @@ class DTOMovimientoStockDetalle:
             cantidad = self.cantidad
         )
 
+class DTOMovimientoCapital:
+    def __init__(self,codigo, total, fecha_creacion, descripcion, nombre_tipo_movimiento, estado, codigo_movimiento_stock, nombre_forma_pago):
+        self.codigo = codigo
+        self.total = total
+        self.fecha_creacion = fecha_creacion
+        self.descripcion = descripcion
+        self.nombre_tipo_movimiento = nombre_tipo_movimiento
+        self.estado = estado
+        self.codigo_movimiento_stock = codigo_movimiento_stock
+        self.nombre_forma_pago = nombre_forma_pago
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            total = self.total,
+            fecha_creacion = self.fecha_creacion,
+            descripcion = self.descripcion,
+            nombre_tipo_movimiento = self.nombre_tipo_movimiento,
+            estado = self.estado,
+            codigo_movimiento_stock = self.codigo_movimiento_stock,
+            nombre_forma_pago = self.nombre_forma_pago
+        )
+
+
 class DTOCaja:
-    def __init__(self,dto_cabecera,*dto_detalles):
+
+    def __init__(self,dto_cabecera,dto_detalles):
         self.dto_cabecera = dto_cabecera
         self.dto_detalles = dto_detalles
+
     def as_json(self):
         return dict(
             caja_cabecera=self.dto_cabecera.as_json(),

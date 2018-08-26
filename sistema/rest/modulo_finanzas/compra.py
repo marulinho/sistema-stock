@@ -122,13 +122,15 @@ def registrar_compra(request):
 
 @transaction.atomic()
 @metodos_requeridos([METODO_PUT])
-def cancelar_compra(request,id_compra):
+def cancelar_compra(request):
     try:
+        datos = obtener_datos_json(request)
         response = HttpResponse()
 
-        if id_compra == '':
+        if CODIGO not in datos or CODIGO == '':
             raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
         else:
+            id_compra = datos[CODIGO]
 
             estado_creado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_CREADO)
             tipo_movimiento_stock = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_COMPRA)
@@ -150,13 +152,23 @@ def cancelar_compra(request,id_compra):
                     raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_PRODUCTO_INEXISTENTE)
 
                 producto = Producto.objects.get(codigo = codigo_producto_detalle_compra)
+                if producto.stock_deposito + producto.stock_local < movimiento_detalle_compra[x].cantidad:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_INSUFICIENTE_CANCELAR_COMPRA)
                 producto.stock_deposito = producto.stock_deposito - movimiento_detalle_compra[x].cantidad
                 producto.save()
 
             estado_cancelado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_CANCELADO)
             movimiento_compra.estado = estado_cancelado_compra
             movimiento_compra.save()
-            response.content = armar_response_content(None, CANCELACION_COMPRA)
+            dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
+                                                    movimiento_compra.fecha_creacion,
+                                                    movimiento_compra.total_parcial,
+                                                    movimiento_compra.descuento,
+                                                    movimiento_compra.total_final,
+                                                    movimiento_compra.usuario.nombre,
+                                                    movimiento_compra.estado.nombre,
+                                                    movimiento_compra.tipo_movimiento.nombre)
+            response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
     except ValueError as err:
@@ -170,13 +182,15 @@ def cancelar_compra(request,id_compra):
 
 @transaction.atomic()
 @metodos_requeridos([METODO_PUT])
-def pagar_compra(request,id_compra):
+def pagar_compra(request):
     try:
+        datos = obtener_datos_json(request)
         response = HttpResponse()
 
-        if id_compra == '':
+        if CODIGO not in datos or CODIGO == '':
             raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
         else:
+            id_compra = datos[CODIGO]
 
             estado_creado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_CREADO)
             tipo_movimiento_stock = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_COMPRA)
@@ -189,7 +203,15 @@ def pagar_compra(request,id_compra):
             estado_pagado_compra = EstadoMovimientoStock.objects.get(nombre = ESTADO_PAGADO)
             movimiento_compra.estado = estado_pagado_compra
             movimiento_compra.save()
-            response.content = armar_response_content(None, PAGO_COMPRA)
+            dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
+                                                    movimiento_compra.fecha_creacion,
+                                                    movimiento_compra.total_parcial,
+                                                    movimiento_compra.descuento,
+                                                    movimiento_compra.total_final,
+                                                    movimiento_compra.usuario.nombre,
+                                                    movimiento_compra.estado.nombre,
+                                                    movimiento_compra.tipo_movimiento.nombre)
+            response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
     except ValueError as err:
@@ -201,6 +223,57 @@ def pagar_compra(request,id_compra):
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
 
+
+@transaction.atomic()
+@metodos_requeridos([METODO_PUT])
+def cambiar_estado_compra(request):
+    try:
+        datos = obtener_datos_json(request)
+        response = HttpResponse()
+
+        if ESTADO not in datos or ESTADO == '':
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            estado = datos[ESTADO]
+
+        if CODIGO not in datos or CODIGO == '':
+            raise ValueError(ERROR_DATOS_FALTANTES, DETALLE_ERROR_DATOS_INCOMPLETOS)
+        else:
+            codigo = datos[CODIGO]
+
+            if EstadoMovimientoStock.objects.filter(nombre = estado).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_ESTADO_INEXISTENTE)
+
+            estado = EstadoMovimientoStock.objects.get(nombre = estado)
+
+            tipo_movimiento_stock = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_COMPRA)
+
+            if MovimientoStock.objects.filter(codigo = codigo, tipo_movimiento= tipo_movimiento_stock).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_COMPRA_INEXISTENTE)
+
+            movimiento_compra = MovimientoStock.objects.get(codigo = codigo, tipo_movimiento= tipo_movimiento_stock)
+
+            movimiento_compra.estado = estado
+            movimiento_compra.save()
+            dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
+                                                    movimiento_compra.fecha_creacion,
+                                                    movimiento_compra.total_parcial,
+                                                    movimiento_compra.descuento,
+                                                    movimiento_compra.total_final,
+                                                    movimiento_compra.usuario.nombre,
+                                                    movimiento_compra.estado.nombre,
+                                                    movimiento_compra.tipo_movimiento.nombre)
+            response.content = armar_response_content(dto_compra)
+            response.status_code = 200
+            return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
 
 @transaction.atomic()
 @metodos_requeridos([METODO_POST])
@@ -230,16 +303,28 @@ def generar_movimiento_capital_compra_movimiento_stock(request):
 
             forma_pago = FormaPago.objects.get(nombre = FORMA_PAGO_EFECTIVO) #Por defecto la forma de pago siempre es efectivo
 
+            if MovimientoCapital.objects.filter(movimiento_stock = movimiento_compra ,tipo_movimiento = salida_movimiento_capital).__len__()>=1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_MOVIMIENTO_CAPITAL_EXISTENTE)
+
             movimiento_capital_salida = MovimientoCapital(total = movimiento_compra.total_final,
                                                           fecha_creacion = datetime.datetime.now(pytz.utc),
-                                                          descripcion_movimiento = (PAGO_MOVIMIENTO_CAPITAL.append(str(movimiento_compra.codigo))),
+                                                          descripcion_movimiento = (PAGO_MOVIMIENTO_CAPITAL + (str(movimiento_compra.codigo))),
                                                           tipo_movimiento = salida_movimiento_capital,
                                                           estado = estado_movimiento_capital_pagado,
                                                           movimiento_stock = movimiento_compra,
                                                           forma_pago = forma_pago
                                                           )
+
             movimiento_capital_salida.saveNewMovimientoCapital()
-            response.content = armar_response_content(None, CREACION_MOVIMIENTO_CAPITAL_SALIDA)
+            dto_movimiento_capital = DTOMovimientoCapital(movimiento_capital_salida.codigo,
+                                                          movimiento_capital_salida.total,
+                                                          movimiento_capital_salida.fecha_creacion,
+                                                          movimiento_capital_salida.descripcion_movimiento,
+                                                          movimiento_capital_salida.tipo_movimiento.nombre,
+                                                          movimiento_capital_salida.estado.nombre,
+                                                          movimiento_capital_salida.movimiento_stock.codigo,
+                                                          movimiento_capital_salida.forma_pago.nombre)
+            response.content = armar_response_content(dto_movimiento_capital)
             response.status_code = 200
             return response
     except ValueError as err:
@@ -290,7 +375,15 @@ def generar_movimiento_capital_compra(request):
                                                           forma_pago = forma_pago
                                                           )
             movimiento_capital_salida.saveNewMovimientoCapital()
-            response.content = armar_response_content(None, CREACION_MOVIMIENTO_CAPITAL_SALIDA)
+            dto_movimiento_capital = DTOMovimientoCapital(movimiento_capital_salida.codigo,
+                                                          movimiento_capital_salida.total,
+                                                          movimiento_capital_salida.fecha_creacion,
+                                                          movimiento_capital_salida.descripcion_movimiento,
+                                                          movimiento_capital_salida.tipo_movimiento.nombre,
+                                                          movimiento_capital_salida.estado.nombre,
+                                                          movimiento_capital_salida.movimiento_stock.codigo,
+                                                          movimiento_capital_salida.forma_pago.nombre)
+            response.content = armar_response_content(dto_movimiento_capital)
             response.status_code = 200
             return response
     except ValueError as err:
@@ -425,7 +518,7 @@ def obtener_compra_id(request,id_compra):
 
             dto_detalles_compra.append(dto_detalle_compra)
         dto_compra = DTOListaMovimientoStock(dto_cabecera_compra,dto_detalles_compra)
-        response.content = armar_response_list_content(dto_compra)
+        response.content = armar_response_content(dto_compra)
         response.status_code = 200
         return response
     except ValueError as err:

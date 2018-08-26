@@ -40,6 +40,12 @@ def registrar_producto(request):
                 id_unidad_medida = datos[ID_UNIDAD_MEDIDA]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_UNIDAD_MEDIDA_PRODUCTO_FALTANTE)
+            if STOCK_MINIMO in datos and not (STOCK_MINIMO == ''):
+                stock_minimo = datos[STOCK_MINIMO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_FALTANTE)
+            if stock_minimo <=0:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_INSUFICIENTE)
 
             estado_habilitado_unidad_medida = EstadoUnidadMedida.objects.get(nombre = ESTADO_HABILITADO)
 
@@ -56,9 +62,6 @@ def registrar_producto(request):
                                        marca = marca,
                                        medida = medida,
                                        unidad_medida = unidad_medida,
-                                       stock_local = 0,
-                                       stock_deposito = 0,
-                                       stock_minimo = 0,
                                        estado = estado_habilitado_producto).__len__() >=1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_EXISTENTE)
             else:
@@ -68,6 +71,7 @@ def registrar_producto(request):
                                             unidad_medida = unidad_medida,
                                             stock_deposito= 0,
                                             stock_local= 0,
+                                            stock_minimo = stock_minimo,
                                             estado = estado_habilitado_producto)
                 producto_creado.saveNewProducto()
                 response.content = armar_response_content(None, CREACION_PRODUCTO)
@@ -114,6 +118,13 @@ def modificar_producto(request):
                 id_unidad_medida = datos[ID_UNIDAD_MEDIDA]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_UNIDAD_MEDIDA_PRODUCTO_FALTANTE)
+            if STOCK_MINIMO in datos and not (STOCK_MINIMO == ''):
+                stock_minimo = datos[STOCK_MINIMO]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_FALTANTE)
+            if stock_minimo <=0:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_MINIMO_PRODUCTO_INSUFICIENTE)
+
 
             estado_habilitado_unidad_medida = EstadoUnidadMedida.objects.get(nombre = ESTADO_HABILITADO)
 
@@ -136,6 +147,7 @@ def modificar_producto(request):
                 producto_modificado.marca = marca
                 producto_modificado.medida = medida
                 producto_modificado.unidad_medida = unidad_medida
+                producto_modificado.stock_minimo = stock_minimo
                 producto_modificado.save()
                 response.content = armar_response_content(None, MODIFICACION_PRODUCTO)
                 response.status_code = 200
