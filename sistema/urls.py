@@ -88,7 +88,9 @@ urlpatterns = [
     url(r'^obtenerListaPrecioVigente/$', lista_precio.obtener_lista_precio, name='obtenerListaPrecioVigente'),
     url(r'^obtenerProductosNoListaVigente/$', lista_precio.obtener_productos_no_lista_precio, name='obtenerProductosNoListaVigente'),
 
-    # MOVIMIENTO_STOCK_COMPRA
+    # COMPRA
+    url(r'^obtenerCompras/$', compra.obtener_compras, name='obtenerCompras'),
+    url(r'^obtenerCompraId/(?P<id_compra>[0-9]+)/$', compra.obtener_compra_id, name='obtenerCompraId'),
     url(r'^registrarCompra/$', compra.registrar_compra, name='registrarCompra'),
     url(r'^cancelarCompra/(?P<id_compra>[0-9]+)/$', compra.cancelar_compra, name='cancelarCompra'),
     url(r'^pagarCompra/(?P<id_compra>[0-9]+)/$', compra.pagar_compra, name='pagarCompra'),

@@ -128,6 +128,8 @@ DETALLE_ERROR_CAJA_ABIERTA = 'No existe una caja abierta'
 DETALLE_ERROR_CAJA_ABIERTA_EXISTENTE = 'Debe cerrar la caja antes de volver abrirla'
 DETALLE_ERROR_CAJA_SIN_DETALLES = 'La caja no tiene detalles'
 DETALLE_ERROR_NO_HAY_CAJA = 'No existen cajas'
+DETALLE_ERROR_COMPRAS_INEXISTENTES = 'No ha realizado compras'
+DETALLE_ERROR_CODIGO_COMPRA_FALTANTE = 'Debe ingresar el codigo de la compra'
 
 # Metodos
 

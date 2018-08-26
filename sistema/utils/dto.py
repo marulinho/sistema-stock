@@ -58,8 +58,7 @@ class DTOListaMovimientoStock:
                              detalle in self.dto_detalle]
         )
 
-
-class DTOMovimientoStock:
+class DTOCabeceraMovimientoStock:
     def __init__(self, codigo, fecha_creacion, total_parcial, descuento, total_final, usuario, estado, tipo_movimiento):
         self.codigo = codigo
         self.fecha_creacion = fecha_creacion
@@ -132,7 +131,6 @@ class DTOCajaCabecera:
             total_cierre = self.total_cierre,
             estado = self.estado
         )
-
 
 class DTOCajaDetalle:
     def __init__(self,fecha_creacion,total,tipo_movimiento,detalle):

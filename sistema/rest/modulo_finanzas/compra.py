@@ -336,3 +336,103 @@ def cancelar_movimiento_capital_compra(request,id_movimiento_salida):
         print err.args
         response.status_code = 401
         return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+@transaction.atomic()
+@metodos_requeridos([METODO_GET])
+def obtener_compras(request):
+    try:
+        response = HttpResponse()
+
+        tipo_movimiento_compra = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_COMPRA)
+
+        if MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra).__len__()<1:
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMPRAS_INEXISTENTES)
+
+        compras = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra)
+        lista_compras = []
+        for x in range(0,compras.__len__()):
+            dto_compra = DTOCabeceraMovimientoStock(compras[x].codigo,
+                                                    compras[x].fecha_creacion,
+                                                    compras[x].total_parcial,
+                                                    compras[x].descuento,
+                                                    compras[x].total_final,
+                                                    compras[x].usuario.nombre,
+                                                    compras[x].estado.nombre,
+                                                    compras[x].tipo_movimiento.nombre)
+            lista_compras.append(dto_compra)
+
+        response.content = armar_response_list_content(lista_compras)
+        response.status_code = 200
+        return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
+
+
+@transaction.atomic()
+@metodos_requeridos([METODO_GET])
+def obtener_compra_id(request,id_compra):
+    try:
+        response = HttpResponse()
+        if id_compra == '':
+            raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_CODIGO_COMPRA_FALTANTE)
+
+        tipo_movimiento_compra = TipoMovimientoStock.objects.get(nombre=MOVIMIENTO_COMPRA)
+
+        if MovimientoStock.objects.filter(codigo = id_compra, tipo_movimiento=tipo_movimiento_compra).__len__() < 1:
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMPRA_INEXISTENTE)
+
+        compra = MovimientoStock.objects.get(codigo = id_compra,tipo_movimiento=tipo_movimiento_compra)
+
+        if MovimientoStockDetalle.objects.filter(movimiento_stock = compra).__len__()<1:
+            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMPRA_SIN_DETALLE)
+
+        movimiento_detalle_compra = MovimientoStockDetalle.objects.filter(movimiento_stock = compra)
+
+        dto_compra = []
+        dto_detalles_compra = []
+        dto_cabecera_compra = DTOCabeceraMovimientoStock(compra.codigo,
+                                                         compra.fecha_creacion,
+                                                         compra.total_parcial,
+                                                         compra.descuento,
+                                                         compra.total_final,
+                                                         compra.usuario.nombre,
+                                                         compra.estado.nombre,
+                                                         compra.tipo_movimiento.nombre)
+
+        for x in range(movimiento_detalle_compra.__len__()):
+
+            #codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, subtotal, cantidad)
+
+            if Producto.objects.filter(codigo=movimiento_detalle_compra[x].producto.codigo).__len__() < 1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE)
+
+            producto = Producto.objects.get(codigo=movimiento_detalle_compra[x].producto.codigo)
+
+            dto_detalle_compra = DTOMovimientoStockDetalle(producto.codigo,
+                                                           producto.nombre,
+                                                           producto.marca,
+                                                           producto.unidad_medida.nombre,
+                                                           producto.medida,
+                                                           movimiento_detalle_compra[x].precio_unitario,
+                                                           movimiento_detalle_compra[x].subtotal,
+                                                           movimiento_detalle_compra[x].cantidad)
+
+            dto_detalles_compra.append(dto_detalle_compra)
+        dto_compra = DTOListaMovimientoStock(dto_cabecera_compra,dto_detalles_compra)
+        response.content = armar_response_list_content(dto_compra)
+        response.status_code = 200
+        return response
+    except ValueError as err:
+        print err.args
+        return build_bad_request_error(response, err.args[0], err.args[1])
+
+    except (IntegrityError, ValueError) as err:
+        print err.args
+        response.status_code = 401
+        return build_bad_request_error(response, ERROR_DE_SISTEMA, DETALLE_ERROR_SISTEMA)
