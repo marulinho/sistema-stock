@@ -76,6 +76,7 @@ def registrar_lista_precio(request):
                 lista_precio_actual = ListaPrecio.objects.get(vigencia_hasta=None,estado=estado_lista_precio_habilitada)
                 lista_precio_actual.vigencia_hasta = datetime.datetime.now(pytz.utc)
                 lista_precio_actual.estado = estado_lista_precio_deshabilitada
+                lista_precio_actual.save()
 
             # creamos la lista de precios
             lista_precio_creada = ListaPrecio(nombre=nombre,
@@ -96,7 +97,6 @@ def registrar_lista_precio(request):
                                                                      producto=producto_ingresado,
                                                                      lista_precio=lista_precio_creada)
                     lista_precio_detalle_creada.save()
-            lista_precio_actual.save()
             response.content = armar_response_content(None, CREACION_LISTA_PRECIO)
             response.status_code = 200
             return response
@@ -155,17 +155,22 @@ def obtener_lista_precio(request):
         response = HttpResponse()
 
         estado_habilitado_lista_precio = EstadoListaPrecio.objects.get(nombre = ESTADO_HABILITADO)
-        if ListaPrecio.objects.filter(vigencia_hasta = None, estado = estado_habilitado_lista_precio).__len__()<1:
+
+        if ListaPrecio.objects.all().__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA)
-        lista_precio = ListaPrecio.objects.get(vigencia_hasta = None, estado = estado_habilitado_lista_precio)
+        else:
+            if ListaPrecio.objects.filter(vigencia_hasta = None, estado = estado_habilitado_lista_precio).__len__()>=1:
+                lista_precio = ListaPrecio.objects.get(vigencia_hasta=None, estado=estado_habilitado_lista_precio)
+            else:
+                lista_precio = ListaPrecio.objects.order_by('codigo').last()
 
-        if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).__len__()<1:
-            raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
+            if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
 
-        detalle_lista_precio = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio)
-        response.content = armar_response_list_content(detalle_lista_precio)
-        response.status_code = 200
-        return response
+            detalle_lista_precio = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio)
+            response.content = armar_response_list_content(detalle_lista_precio)
+            response.status_code = 200
+            return response
 
     except ValueError as err:
         print err.args
@@ -184,9 +189,14 @@ def obtener_productos_no_lista_precio(request):
         response = HttpResponse()
 
         estado_habilitado_lista_precio = EstadoListaPrecio.objects.get(nombre = ESTADO_HABILITADO)
-        if ListaPrecio.objects.filter(vigencia_hasta = None, estado = estado_habilitado_lista_precio).__len__()<1:
+
+        if ListaPrecio.objects.all().__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_NO_HABILITADA)
-        lista_precio = ListaPrecio.objects.get(vigencia_hasta = None, estado = estado_habilitado_lista_precio)
+        else:
+            if ListaPrecio.objects.filter(vigencia_hasta = None, estado = estado_habilitado_lista_precio).__len__()>=1:
+                lista_precio = ListaPrecio.objects.get(vigencia_hasta=None, estado=estado_habilitado_lista_precio)
+            else:
+                lista_precio = ListaPrecio.objects.order_by('codigo').last()
 
         if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
