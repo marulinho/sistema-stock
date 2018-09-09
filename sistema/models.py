@@ -295,7 +295,7 @@ class ListaPrecioDetalle(models.Model):
             precio_unitario_compra = self.precio_unitario_compra,
             precio_unitario_venta = self.precio_unitario_venta,
             producto = self.producto.as_json(),
-            lista_precio = self.lista_precio.as_json()
+            lista_precio = self.lista_precio.codigo
         )
 
 class TipoMovimientoStock(models.Model):

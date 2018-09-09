@@ -114,6 +114,7 @@ DETALLE_ERROR_COMPRA_INEXISTENTE = 'No existe una compra con el codigo ingresado
 DETALLE_ERROR_COMPRA_SIN_DETALLE = 'La compra no tiene asociado detalles'
 DETALLE_ERROR_CANTIDAD_NO_DISPONIBLE = 'No puede generar un movimiento de productos mayor al stock disponible'
 DETALLE_ERROR_REMITO_INEXISTENTE = 'No existe un remito con el codigo ingresado'
+DETALLE_ERROR_REMITOS_INEXISTENTE = 'No ha realizado remitos'
 DETALLE_ERROR_REMITO_SIN_DETALLE = 'El remito no tiene asociado detalles'
 DETALLE_ERROR_CODIGO_COMPRA_FALTANTE = 'Debe ingresar el codigo de la compra'
 DETALLE_ERROR_TIPO_MOVIMIENTO_CAPITAL_FALTANTE = 'Debe ingresar el tipo de movimiento de capital'
@@ -135,6 +136,7 @@ DETALLE_ERROR_CODIGO_COMPRA_FALTANTE = 'Debe ingresar el codigo de la compra'
 DETALLE_ERROR_STOCK_INSUFICIENTE_CANCELAR_COMPRA = 'No dispone del stock suficiente para cancelar la compra'
 DETALLE_ERROR_MOVIMIENTO_CAPITAL_EXISTENTE = 'Ya existe un movimiento de salida de capital asociado al movimiento de stock'
 DETALLE_ERROR_ESTADO_INEXISTENTE = 'No existe un estado con el nombre ingresado'
+DETALLE_ERROR_CODIGO_REMITO_FALTANTE = 'Debe ingresar el codigo del remito'
 # Metodos
 
 def build_error(response, error_code, error_descripcion):

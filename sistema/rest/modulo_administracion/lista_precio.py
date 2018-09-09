@@ -12,6 +12,7 @@ from sistema.utils.utils import *
 from sistema.utils.constantes import *
 from sistema.utils.decorators import *
 from sistema.utils.error_handler import *
+from sistema.utils.dto import *
 
 
 @transaction.atomic()
@@ -167,8 +168,36 @@ def obtener_lista_precio(request):
             if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).__len__()<1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
 
-            detalle_lista_precio = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio)
-            response.content = armar_response_list_content(detalle_lista_precio)
+            lista_precio_detalle = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio)
+            dto_lista_precio = []
+            dto_detalles = []
+            dto_cabecera_lista = DTOListaPrecioCabecera(lista_precio.codigo,
+                                                        lista_precio.nombre,
+                                                        lista_precio.vigencia_desde,
+                                                        lista_precio.vigencia_hasta,
+                                                        lista_precio.estado.nombre
+                                                        )
+
+            for x in range(0,lista_precio_detalle.__len__()):
+                if Producto.objects.filter(codigo = lista_precio_detalle[x].producto.codigo).__len__()<1:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE_LISTA)
+                producto = Producto.objects.get(codigo = lista_precio_detalle[x].producto.codigo)
+
+                dto_detalle = DTOListaPrecioDetalle(producto.codigo,
+                                                    producto.nombre,
+                                                    producto.marca,
+                                                    producto.medida,
+                                                    producto.unidad_medida.nombre,
+                                                    lista_precio_detalle[x].precio_unitario_compra,
+                                                    lista_precio_detalle[x].precio_unitario_venta,
+                                                    producto.stock_deposito,
+                                                    producto.stock_minimo,
+                                                    producto.stock_local
+                                                    )
+                dto_detalles.append(dto_detalle)
+
+            dto_lista_precio = DTOListaPrecio(dto_cabecera_lista,dto_detalles)
+            response.content = armar_response_content(dto_lista_precio)
             response.status_code = 200
             return response
 
@@ -233,7 +262,17 @@ def obtener_productos_no_lista_precio(request):
 
         productos_no_lista = []
         for x in range(0,codigos_no_repetidos.__len__()):
-            productos_no_lista.insert(x,Producto.objects.get(codigo=codigos_no_repetidos[x]))
+            producto = Producto.objects.get(codigo=codigos_no_repetidos[x])
+            dto_producto = DTOProducto(producto.codigo,
+                                       producto.nombre,
+                                       producto.marca,
+                                       producto.medida,
+                                       producto.unidad_medida.nombre,
+                                       producto.stock_local,
+                                       producto.stock_deposito,
+                                       producto.stock_minimo,
+                                       producto.estado.nombre)
+            productos_no_lista.append(dto_producto)
         response.content = armar_response_list_content(productos_no_lista)
         response.status_code = 200
         return response

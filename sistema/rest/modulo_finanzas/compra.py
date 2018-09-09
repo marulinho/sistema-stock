@@ -500,8 +500,6 @@ def obtener_compra_id(request,id_compra):
 
         for x in range(movimiento_detalle_compra.__len__()):
 
-            #codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, subtotal, cantidad)
-
             if Producto.objects.filter(codigo=movimiento_detalle_compra[x].producto.codigo).__len__() < 1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE)
 

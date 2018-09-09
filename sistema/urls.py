@@ -108,7 +108,9 @@ urlpatterns = [
     url(r'^generarDetalleCaja/$', caja.generar_detalle_caja, name='generarDetalleCaja'),
 
     # MOVIMIENTO_STOCK_REMITO
+    url(r'^obtenerRemitos/$', remito.obtener_remitos, name='obtenerRemitos'),
+    url(r'^obtenerRemitoId/(?P<id_remito>[0-9]+)/$', remito.obtener_remito_id, name='obtenerRemitoId'),
     url(r'^registrarRemito/$', remito.registrar_remito, name='registrarRemito'),
-    url(r'^cancelarRemito/(?P<id_compra>[0-9]+)/$', remito.cancelar_remito, name='cancelarRemito'),
+    url(r'^cancelarRemito/$', remito.cancelar_remito, name='cancelarRemito'),
 
 ]

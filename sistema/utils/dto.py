@@ -53,8 +53,8 @@ class DTOListaMovimientoStock:
 
     def as_json(self):
         return dict(
-            compra_cabecera= self.dto_movimiento_stock.as_json(),
-            compra_detalles= [detalle.as_json() for
+            movimiento_cabecera= self.dto_movimiento_stock.as_json(),
+            movimiento_detalles= [detalle.as_json() for
                              detalle in self.dto_detalle]
         )
 
@@ -171,4 +171,91 @@ class DTOCajaDetalle:
             total = self.total,
             tipo_movimiento = self.tipo_movimiento,
             detalle = self.detalle
+        )
+
+class DTOListaPrecio:
+
+    def __init__(self,dto_cabecera,dto_detalles):
+        self.dto_cabecera = dto_cabecera
+        self.dto_detalles = dto_detalles
+
+    def as_json(self):
+        return dict(
+            lista_precio_cabecera=self.dto_cabecera.as_json(),
+            lista_precio_detalles=[detalle.as_json() for
+                           detalle in self.dto_detalles]
+        )
+
+class DTOListaPrecioCabecera:
+    def __init__(self, codigo, nombre, vigencia_desde, vigencia_hasta, estado):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.vigencia_desde = vigencia_desde
+        self.vigencia_hasta = vigencia_hasta
+        self.estado = estado
+
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre = self.nombre,
+            vigencia_desde = self.vigencia_desde,
+            vigencia_hasta = self.vigencia_hasta,
+            estado = self.estado
+        )
+
+class DTOListaPrecioDetalle:
+    def __init__(self,codigo,nombre,marca,medida,nombre_medida,precio_compra,precio_venta,stock_deposito,stock_minimo,stock_local):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.marca = marca
+        self.medida = medida
+        self.nombre_medida = nombre_medida
+        self.precio_venta = precio_venta
+        self.precio_compra = precio_compra
+        self.margen_ganancia = round(((precio_venta / precio_compra) - 1),2) * 100
+        self.ganancia = precio_venta - precio_compra
+        self.stock_deposito = stock_deposito
+        self.stock_minimo = stock_minimo
+        self.stock_local = stock_local
+
+    def as_json(self):
+        return dict(
+            codigo_producto=self.codigo,
+            nombre_producto=self.nombre,
+            marca_producto=self.marca,
+            medida=self.medida,
+            nombre_medida=self.nombre_medida,
+            precio_compra=self.precio_compra,
+            precio_venta=self.precio_venta,
+            margen_ganancia=self.margen_ganancia,
+            ganancia=self.ganancia,
+            stock_deposito = self.stock_deposito,
+            stock_minimo = self.stock_minimo,
+            stock_local = self.stock_local
+        )
+
+class DTOProducto:
+    def __init__(self,codigo,nombre,marca,medida,nombre_medida,stock_local,stock_deposito,stock_minimo,estado):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.marca = marca
+        self.medida = medida
+        self.nombre_medida = nombre_medida
+        self.stock_local = stock_local
+        self.stock_deposito = stock_deposito
+        self.stock_minimo = stock_minimo
+        self.estado = estado
+
+    def as_json(self):
+        return dict(
+            codigo_producto=self.codigo,
+            nombre_producto=self.nombre,
+            marca_producto=self.marca,
+            medida=self.medida,
+            nombre_medida=self.nombre_medida,
+            stock_local=self.stock_local,
+            stock_deposito=self.stock_deposito,
+            stock_minimo=self.stock_minimo,
+            estado=self.estado
         )
