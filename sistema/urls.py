@@ -10,8 +10,10 @@ from sistema.rest.modulo_administracion import unidad_medida
 from sistema.rest.modulo_administracion import combo
 from sistema.rest.modulo_administracion import lista_precio
 from sistema.rest.modulo_finanzas import compra
+from sistema.rest.modulo_finanzas import retiro
 from sistema.rest.modulo_finanzas import remito
 from sistema.rest.modulo_finanzas import caja
+from sistema.rest.modulo_finanzas import ventas
 
 urlpatterns = [
 
@@ -96,9 +98,22 @@ urlpatterns = [
     url(r'^pagarCompra/$', compra.pagar_compra, name='pagarCompra'),
     url(r'^cambiarEstadoCompra/$', compra.cambiar_estado_compra, name='cambiarEstadoCompra'),
     url(r'^generarMovimientoSalidaCapitalStock/$', compra.generar_movimiento_capital_compra_movimiento_stock, name='generarMovimientoSalidaCapitalStock'),
-    url(r'^generarMovimientoSalidaCapital/$', compra.generar_movimiento_capital_compra, name='generarMovimientoSalidaCapital'),
-    url(r'^cancelarMovimientoSalidaCapital/(?P<id_compra>[0-9]+)/$', compra.cancelar_movimiento_capital_compra, name='cancelarMovimientoSalidaCapital'),
-    url(r'^cancelarMovimientoSalidaCapital/(?P<id_compra>[0-9]+)/$', compra.cancelar_movimiento_capital_compra, name='cancelarMovimientoSalidaCapital'),
+
+    #RETIRO
+    url(r'^obtenerRetiros/$', retiro.obtener_retiros, name='obtenerRetiros'),
+    url(r'^obtenerRetiroId/(?P<id_retiro>[0-9]+)/$', retiro.obtener_retiro_id, name='obtenerRetiroId'),
+    url(r'^generarRetiroCapital/$', retiro.generar_retiro_capital, name='generarRetiroCapital'),
+    url(r'^cancelarRetiroCapital/$', retiro.cancelar_retiro_capital, name='cancelarRetiroCapital'),
+
+
+    #VENTA
+    url(r'^obtenerVentas/$', ventas.obtener_ventas, name='obtenerVentas'),
+    url(r'^obtenerVentaId/(?P<id_venta>[0-9]+)/$', ventas.obtener_venta_id, name='obtenerVentaId'),
+    url(r'^registrarVenta/$', ventas.registrar_venta, name='registrarVenta'),
+    url(r'^cancelarVenta/$', ventas.cancelar_venta, name='cancelarVenta'),
+    url(r'^cobrarVenta/$', ventas.cobrar_venta, name='cobrarVenta'),
+    url(r'^cambiarEstadoVenta/$', ventas.cambiar_estado_venta, name='cambiarEstadoVenta'),
+    url(r'^generarMovimientoEntradaCapitalStock/$', ventas.generar_movimiento_capital_venta_movimiento_stock, name='generarMovimientoEntradaCapitalStock'),
 
 
     #CAJA

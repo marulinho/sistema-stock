@@ -120,7 +120,7 @@ def cerrar_caja(request):
                 total_cierre = 0
             else:
                 caja_detalles = CajaDetalle.objects.filter(caja = caja)
-                total_cierre = 0
+                total_cierre = caja.total_apertura
 
                 for x in range(0, caja_detalles.__len__()):
                     if caja_detalles[x].movimiento_capital.estado.nombre == ESTADO_PAGADO:

@@ -447,6 +447,7 @@ class MovimientoCapital(models.Model):
     tipo_movimiento = models.ForeignKey(TipoMovimientoCapital, db_column= 'id_tipo_movimiento')
     estado = models.ForeignKey(EstadoMovimientoCapital, db_column= 'id_estado')
     movimiento_stock = models.ForeignKey(MovimientoStock, db_column= 'id_movimiento_stock', null=True)
+    usuario = models.ForeignKey(Usuario, db_column='id_usuario',null=True)
     forma_pago = models.ForeignKey(FormaPago, db_column= 'id_forma_pago')
 
     def as_json(self):
@@ -458,6 +459,7 @@ class MovimientoCapital(models.Model):
             estado = self.estado.id,
             tipo_movimiento = self.tipo_movimiento.codigo,
             movimiento_stock = self.movimiento_stock.codigo,
+            usuario = self.usuario.id,
             forma_pago = self.forma_pago.id
         )
 

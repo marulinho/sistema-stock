@@ -105,7 +105,7 @@ class DTOMovimientoStockDetalle:
         )
 
 class DTOMovimientoCapital:
-    def __init__(self,codigo, total, fecha_creacion, descripcion, nombre_tipo_movimiento, estado, codigo_movimiento_stock, nombre_forma_pago):
+    def __init__(self,codigo, total, fecha_creacion, descripcion, nombre_tipo_movimiento, estado, codigo_movimiento_stock, nombre_forma_pago,usuario):
         self.codigo = codigo
         self.total = total
         self.fecha_creacion = fecha_creacion
@@ -114,6 +114,7 @@ class DTOMovimientoCapital:
         self.estado = estado
         self.codigo_movimiento_stock = codigo_movimiento_stock
         self.nombre_forma_pago = nombre_forma_pago
+        self.usuario = usuario
 
     def as_json(self):
         return dict(
@@ -124,7 +125,8 @@ class DTOMovimientoCapital:
             nombre_tipo_movimiento = self.nombre_tipo_movimiento,
             estado = self.estado,
             codigo_movimiento_stock = self.codigo_movimiento_stock,
-            nombre_forma_pago = self.nombre_forma_pago
+            nombre_forma_pago = self.nombre_forma_pago,
+            usuario = self.usuario
         )
 
 

@@ -120,6 +120,7 @@ DETALLE_ERROR_CODIGO_COMPRA_FALTANTE = 'Debe ingresar el codigo de la compra'
 DETALLE_ERROR_TIPO_MOVIMIENTO_CAPITAL_FALTANTE = 'Debe ingresar el tipo de movimiento de capital'
 DETALLE_ERROR_TIPO_MOVIMIENTO_CAPITAL_INEXISTENTE = 'El tipo de movimiento no existe'
 DETALLE_ERROR_CODIGO_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE = 'Debe ingresar el codigo del movimiento de salida de capital'
+DETALLE_ERROR_CODIGO_MOVIMIENTO_CAPITAL_ENTRADA_FALTANTE = 'Debe ingresar el codigo del movimiento de entrada de capital'
 DETALLE_ERROR_MOVIMIENTO_SALIDA_CAPITAL_INEXISTENTE = 'No existe un movimiento de salida de capital con el codigo ingresado'
 DETALLE_ERROR_DESCRIPCION_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE = 'El movimiento debe tener una descripcion'
 DETALLE_ERROR_TOTAL_MOVIMIENTO_CAPITAL_SALIDA_FALTANTE = 'El movimiento debe tener un total'
@@ -137,6 +138,16 @@ DETALLE_ERROR_STOCK_INSUFICIENTE_CANCELAR_COMPRA = 'No dispone del stock suficie
 DETALLE_ERROR_MOVIMIENTO_CAPITAL_EXISTENTE = 'Ya existe un movimiento de salida de capital asociado al movimiento de stock'
 DETALLE_ERROR_ESTADO_INEXISTENTE = 'No existe un estado con el nombre ingresado'
 DETALLE_ERROR_CODIGO_REMITO_FALTANTE = 'Debe ingresar el codigo del remito'
+DETALLE_ERROR_STOCK_INSUFICIENTE_VENTA = 'No dispone del stock suficiente para realizar la venta'
+DETALLE_ERROR_VENTA_INEXISTENTE = 'No existe una venta con el codigo ingresado'
+DETALLE_ERROR_VENTA_SIN_DETALLE = 'La venta no tiene asociado detalles'
+DETALLE_ERROR_VENTAS_INEXISTENTES = 'No ha realizado ventas'
+DETALLE_ERROR_CODIGO_VENTA_FALTANTE = 'Debe ingresar el codigo de venta'
+DETALLE_ERROR_VENTA_CANCELADA = 'La venta ya ha sido cancelada'
+DETALLE_ERROR_VENTA_SIN_MOVIMIENTO_CAPITAL = 'La venta no tiene asociada un movimiento de entrada de capital'
+DETALLE_ERROR_RETIROS_INEXISTENTES = 'No existen retiros de capital'
+DETALLE_ERROR_CODIGO_RETIRO_FALTANTE = 'Debe ingresar el codigo del retiro'
+
 # Metodos
 
 def build_error(response, error_code, error_descripcion):

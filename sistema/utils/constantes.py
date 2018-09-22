@@ -47,6 +47,7 @@ CANCELACION_MOVIMIENTO_CAPITAL_SALIDA = 'Movimiento de salida de capital cancela
 CREACION_DETALLE_CAJA = 'Detalle Caja creado exitosamente'
 APERTURA_CAJA = 'Caja abierta exitosamente'
 CIERRE_CAJA = 'Caja cerrada exitosamente'
+CREACION_VENTA = 'Venta creada exitosamente'
 
 #Constantes Models
 #Generales
@@ -106,5 +107,7 @@ FORMA_PAGO_TARJETA_CREDITO = 'Tarjeta_Credito'
 FORMA_PAGO_TARJETA_DEBITO = 'Tarjeta_Debito'
 DESCUENTO = 'descuento'
 PAGO_MOVIMIENTO_CAPITAL = 'Compra nro: '
+COBRO_MOVIMIENTO_CAPITAL = 'Venta nro: '
+RETIRO_MOVIMIENTO_CAPITAL = 'Retiro nro: '
 TOTAL = 'total'
 ESTADO = 'estado'
