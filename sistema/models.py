@@ -7,6 +7,49 @@ from django.db import models
 
 # Create your models here.
 
+class EstadoCliente(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Cliente: " + self.nombre
+
+class EstadoTipoCliente(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Tipo Cliente: " + self.nombre
+
+class TipoCliente(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    estado = models.ForeignKey(EstadoTipoCliente, db_column='id_estado')
+
+    def __str__(self):
+        return "Tipo Cliente: " + self.nombre
+
+class Cliente(models.Model):
+    codigo = models.IntegerField(primary_key=True, default=1000)
+    nombre = models.CharField(max_length=40)
+    apellido = models.CharField(max_length=40)
+    dni = models.IntegerField()
+    telefono = models.IntegerField()
+    direccion = models.CharField(max_length=100)
+
+    estado = models.ForeignKey(EstadoCliente, db_column="id_estado_cliente")
+    tipo_cliente = models.ForeignKey(TipoCliente, db_column='id_tipo_cliente')
+
+    def saveNewCliente(self):
+        if Cliente.objects.order_by('codigo').__len__()==0:
+            self.codigo = 1000
+        else:
+            self.codigo = Cliente.objects.order_by('codigo').last().codigo + 1
+        super(Cliente, self).save()
+
+
 class EstadoUsuario(models.Model):
     nombre = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=50)

@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from sistema.rest.modulo_seguridad import preguntas
 from sistema.rest.modulo_seguridad import usuario
+from sistema.rest.modulo_seguridad import cliente
 from sistema.rest.modulo_seguridad import respuestas
 from sistema.rest.modulo_administracion import categoria
 from sistema.rest.modulo_administracion import subcategoria
@@ -36,6 +37,13 @@ urlpatterns = [
     url(r'^recuperarCuenta/$', usuario.recuperar_cuenta, name='recuperarCuenta'),
     url(r'^iniciarSesion/$', usuario.iniciar_sesion, name='iniciarSesion'),
     url(r'^finalizarSesion/$', usuario.finalizar_sesion, name='finalizarSesion'),
+
+    #CLIENTES
+    url(r'^registrarCliente/$', cliente.registar_cliente, name='registrarCliente'),
+    url(r'^modificarCliente/$', cliente.modificar_cliente, name='modificarCliente'),
+    url(r'^eliminarCliente/$', cliente.eliminar_cliente, name='eliminarCliente'),
+    url(r'^obtenerClientes/$', cliente.obtener_clientes, name='obtenerClientes'),
+    url(r'^obtenerClienteId/(?P<id_cliente>[0-9]+)/$', cliente.obtener_cliente_id, name='obtenerClienteId'),
 
     #CATEGORIAS
     url(r'^registrarCategoria/$', categoria.registrar_categoria, name='registrarCategoria'),

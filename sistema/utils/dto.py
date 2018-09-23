@@ -261,3 +261,26 @@ class DTOProducto:
             stock_minimo=self.stock_minimo,
             estado=self.estado
         )
+
+class DTOCliente:
+    def __init__(self, codigo,nombre,apellido,dni,telefono,direccion,tipo_cliente,estado):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.apellido = apellido
+        self.dni = dni
+        self.telefono = telefono
+        self.direccion = direccion
+        self.tipo_cliente = tipo_cliente
+        self.estado = estado
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre = self.nombre,
+            apellido = self.apellido,
+            dni = self.dni,
+            telefono = self.telefono,
+            direccion = self.direccion,
+            tipo_cliente = self.tipo_cliente,
+            estado = self.estado
+        )

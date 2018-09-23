@@ -48,6 +48,9 @@ CREACION_DETALLE_CAJA = 'Detalle Caja creado exitosamente'
 APERTURA_CAJA = 'Caja abierta exitosamente'
 CIERRE_CAJA = 'Caja cerrada exitosamente'
 CREACION_VENTA = 'Venta creada exitosamente'
+CREACION_CLIENTE = 'Cliente creado exitosamente'
+MODIFICACION_CLIENTE = 'Cliente modificado exitosamente'
+ELIMINACION_CLIENTE = 'Cliente eliminado exitosamente'
 
 #Constantes Models
 #Generales
@@ -66,6 +69,13 @@ FECHA_HASTA = 'fecha_hasta'
 ID_PREGUNTA = 'id_pregunta'
 PREGUNTA_DESCRIPCION = 'descripcion'
 RESPUESTA_DESCRIPCION = 'respuesta_descripcion'
+
+#Cliente
+DNI = 'dni'
+TELEFONO = 'telefono'
+DIRECCION = 'direccion'
+TIPO_CLIENTE = 'tipo_cliente'
+ID_CLIENTE = 'id_cliente'
 
 #Categoria
 CODIGO = 'codigo'
