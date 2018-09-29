@@ -349,7 +349,7 @@ def obtener_compras(request):
         if MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra).__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_COMPRAS_INEXISTENTES)
 
-        compras = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra)
+        compras = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra).order_by('-codigo')
         lista_compras = []
         for x in range(0,compras.__len__()):
             dto_compra = DTOCabeceraMovimientoStock(compras[x].codigo,

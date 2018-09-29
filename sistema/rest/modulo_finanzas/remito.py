@@ -160,7 +160,7 @@ def obtener_remitos(request):
         if MovimientoStock.objects.filter(tipo_movimiento=tipo_movimiento_stock).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_REMITO_INEXISTENTE)
 
-        movimiento_remito = MovimientoStock.objects.filter(tipo_movimiento=tipo_movimiento_stock)
+        movimiento_remito = MovimientoStock.objects.filter(tipo_movimiento=tipo_movimiento_stock).order_by('-codigo')
 
         lista_remito = []
 

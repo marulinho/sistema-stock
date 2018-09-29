@@ -208,7 +208,7 @@ def obtener_productos(request):
         if Producto.objects.filter(estado = estado_habilitado).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTOS_INEXISTENTES)
         else:
-            productos = Producto.objects.filter(estado=estado_habilitado)
+            productos = Producto.objects.filter(estado=estado_habilitado).order_by('-codigo')
             response.content = armar_response_list_content(productos)
             response.status_code = 200
             return response
@@ -363,7 +363,7 @@ def obtener_productos_subcategoriaid(request,id_subcategoria):
             estado_habilitado_producto = EstadoProducto.objects.get(nombre=ESTADO_HABILITADO)
             if Producto.objects.filter(subcategoria = id_subcategoria, estado=estado_habilitado_producto).__len__()>=1:
                 productos = Producto.objects.filter(subcategoria=id_subcategoria,
-                                                            estado=estado_habilitado_producto)
+                                                            estado=estado_habilitado_producto).order_by('-codigo')
                 response.content = armar_response_list_content(productos)
                 response.status_code = 200
                 return response
@@ -394,7 +394,7 @@ def obtener_productos_no_subcategoriaid(request,id_subcategoria):
             if Producto.objects.filter(estado=estado_habilitado_producto).exclude(subcategoria = id_subcategoria).__len__()<1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTOS_INEXISTENTES)
             else:
-                productos = Producto.objects.filter(estado=estado_habilitado_producto).exclude(subcategoria=id_subcategoria)
+                productos = Producto.objects.filter(estado=estado_habilitado_producto).exclude(subcategoria=id_subcategoria).order_by('-codigo')
                 response.content = armar_response_list_content(productos)
                 response.status_code = 200
                 return response

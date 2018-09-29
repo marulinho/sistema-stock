@@ -163,12 +163,12 @@ def obtener_lista_precio(request):
             if ListaPrecio.objects.filter(vigencia_hasta = None, estado = estado_habilitado_lista_precio).__len__()>=1:
                 lista_precio = ListaPrecio.objects.get(vigencia_hasta=None, estado=estado_habilitado_lista_precio)
             else:
-                lista_precio = ListaPrecio.objects.order_by('codigo').last()
+                lista_precio = ListaPrecio.objects.order_by('-codigo')
 
             if ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).__len__()<1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRECIO_SIN_DETALLE)
 
-            lista_precio_detalle = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio)
+            lista_precio_detalle = ListaPrecioDetalle.objects.filter(lista_precio = lista_precio).order_by('producto')
             dto_lista_precio = []
             dto_detalles = []
             dto_cabecera_lista = DTOListaPrecioCabecera(lista_precio.codigo,

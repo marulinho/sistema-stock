@@ -24,7 +24,7 @@ class DTOCombo:
         )
 
 class DTOComboDetalle:
-    def __init__(self, codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, margen_ganancia, cantidad):
+    def __init__(self, codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, margen_ganancia, cantidad,subtotal):
         self.codigo = codigo_producto
         self.nombre = nombre_producto
         self.marca = marca_producto
@@ -33,6 +33,7 @@ class DTOComboDetalle:
         self.precio = precio_unitario
         self.margen_ganancia = margen_ganancia
         self.cantidad = cantidad
+        self.subtotal = subtotal
 
     def as_json(self):
         return dict(
@@ -43,7 +44,8 @@ class DTOComboDetalle:
             nombre_medida = self.nombre_medida,
             precio_producto=self.precio,
             margen_ganancia = self.margen_ganancia,
-            cantidad = self.cantidad
+            cantidad = self.cantidad,
+            subtotal = self.subtotal
         )
 
 class DTOListaMovimientoStock:
@@ -213,8 +215,8 @@ class DTOListaPrecioDetalle:
         self.marca = marca
         self.medida = medida
         self.nombre_medida = nombre_medida
-        self.precio_venta = precio_venta
-        self.precio_compra = precio_compra
+        self.precio_venta = round(precio_venta,2)
+        self.precio_compra = round(precio_compra,2)
         self.margen_ganancia = round(((precio_venta / precio_compra) - 1),2) * 100
         self.ganancia = precio_venta - precio_compra
         self.stock_deposito = stock_deposito

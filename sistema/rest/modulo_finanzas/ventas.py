@@ -370,7 +370,7 @@ def obtener_ventas(request):
         if MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_venta).__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_VENTAS_INEXISTENTES)
 
-        ventas = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_venta)
+        ventas = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_venta).order_by('-codigo')
         lista_ventas = []
         for x in range(0,ventas.__len__()):
             dto_venta = DTOCabeceraMovimientoStock(ventas[x].codigo,

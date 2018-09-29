@@ -35,8 +35,8 @@ class Cliente(models.Model):
     codigo = models.IntegerField(primary_key=True, default=1000)
     nombre = models.CharField(max_length=40)
     apellido = models.CharField(max_length=40)
-    dni = models.IntegerField()
-    telefono = models.IntegerField()
+    dni = models.BigIntegerField()
+    telefono = models.BigIntegerField()
     direccion = models.CharField(max_length=100)
 
     estado = models.ForeignKey(EstadoCliente, db_column="id_estado_cliente")

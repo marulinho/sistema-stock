@@ -151,7 +151,7 @@ def obtener_categorias(request):
         if Categoria.objects.filter(estado = estado_habilitado).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CATEGORIAS_INEXISTENTES)
         else:
-            categorias = Categoria.objects.filter(estado=estado_habilitado)
+            categorias = Categoria.objects.filter(estado=estado_habilitado).order_by('-codigo')
             response.content = armar_response_list_content(categorias)
             response.status_code = 200
             return response

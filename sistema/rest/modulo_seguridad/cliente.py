@@ -205,7 +205,7 @@ def obtener_clientes(request):
         if Cliente.objects.filter(estado = estado_habilitado).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CLIENTES_INHABILITADOS)
 
-        cliente = Cliente.objects.filter(estado = estado_habilitado)
+        cliente = Cliente.objects.filter(estado = estado_habilitado).order_by('-codigo')
 
         lista_dto_cliente = []
         for x in range(0,cliente.__len__()):

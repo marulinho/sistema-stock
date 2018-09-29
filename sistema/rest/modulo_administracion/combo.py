@@ -95,7 +95,7 @@ def registrar_combo(request):
 
                     combo_detalle_creado = ComboDetalle(cantidad=cantidad_productos[x],
                                                         precio_unitario_producto_combo = precio_producto,
-                                                        subtotal = (precio_producto * (1+margen_ganancia_productos_combo[x])) * cantidad_productos[x],
+                                                        subtotal = (precio_producto * (1+(margen_ganancia_productos_combo[x]/100.00))) * cantidad_productos[x],
                                                         margen_ganancia_producto_combo = margen_ganancia_productos_combo[x],
                                                         producto=producto_ingresado,
                                                         combo=combo_creado)
@@ -185,7 +185,8 @@ def obtener_combo_id(request, id_combo):
                                                 combo_detalle[x].producto.medida,
                                                 combo_detalle[x].precio_unitario_producto_combo,
                                                 combo_detalle[x].margen_ganancia_producto_combo,
-                                                combo_detalle[x].cantidad)
+                                                combo_detalle[x].cantidad,
+                                                combo_detalle[x].subtotal)
             dto_lista_detalle_combo.append(dto_combo_detalle)
         dto_lista_combo = DTOListaCombo(dto_cabecera_combo,dto_lista_detalle_combo)
         response.content = armar_response_content(dto_lista_combo)
@@ -211,7 +212,7 @@ def obtener_combos_vigentes(request):
         if Combo.objects.filter(estado=estado_combo_habilitado).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE)
 
-        combos_habilitados = Combo.objects.filter(estado=estado_combo_habilitado)
+        combos_habilitados = Combo.objects.filter(estado=estado_combo_habilitado).order_by('-codigo')
 
         lista_dto_combo = []
 
@@ -230,7 +231,8 @@ def obtener_combos_vigentes(request):
                                                     detalle_combo[y].producto.medida,
                                                     detalle_combo[y].precio_unitario_producto_combo,
                                                     detalle_combo[y].margen_ganancia_producto_combo,
-                                                    detalle_combo[y].cantidad)
+                                                    detalle_combo[y].cantidad,
+                                                    detalle_combo[y].subtotal)
                 lista_dto_combo_detalles.append(dto_combo_detalle)
             dto_lista_combo = DTOListaCombo(dto_combo,lista_dto_combo_detalles)
             lista_dto_combo.append(dto_lista_combo)
@@ -332,7 +334,8 @@ def modificar_combo(request):
 
                     combo_detalle.cantidad = cantidad_productos[x]
                     combo_detalle.margen_ganancia_producto_combo = margen_ganancia_productos_combo[x]
-                    combo_detalle.subtotal =  (combo_detalle.precio_unitario_producto_combo * (1+margen_ganancia_productos_combo[x])) * cantidad_productos[x]
+                    combo_detalle.subtotal = combo_detalle.precio_unitario_producto_combo * (1+(margen_ganancia_productos_combo[x]/100.00)) * cantidad_productos[x]
+                    combo_detalle.subtotal = round(combo_detalle.subtotal,2)
                     precio += combo_detalle.subtotal
                     combo_detalle.save()
             combo_actual.precio = precio
@@ -388,7 +391,7 @@ def actualizar_precio_combo(request):
                     else:
                         lista_precio_producto = ListaPrecioDetalle.objects.get(lista_precio = lista_precio, producto = producto_combo_detalle)
                         combo_detalles[y].precio_unitario_producto_combo = lista_precio_producto.precio_unitario_compra
-                    combo_detalles[y].subtotal = combo_detalles[y].precio_unitario_producto_combo * combo_detalles[y].cantidad
+                    combo_detalles[y].subtotal = combo_detalles[y].precio_unitario_producto_combo * combo_detalles[y].cantidad * (1+combo_detalles[y].margen_ganancia_producto_combo /100)
                     precio_combo += combo_detalles[y].subtotal
                     combo_detalles[y].save()
                 combos_habilitados[x].precio = precio_combo

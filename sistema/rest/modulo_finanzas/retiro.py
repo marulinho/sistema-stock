@@ -133,7 +133,7 @@ def obtener_retiros(request):
         if MovimientoCapital.objects.filter(movimiento_stock=None).__len__()<1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_RETIROS_INEXISTENTES)
 
-        retiros = MovimientoCapital.objects.filter(movimiento_stock=None)
+        retiros = MovimientoCapital.objects.filter(movimiento_stock=None).order_by('-codigo')
         lista_retiros = []
         for x in range(0,retiros.__len__()):
             dto_retiro = DTOMovimientoCapital(retiros[x].codigo,

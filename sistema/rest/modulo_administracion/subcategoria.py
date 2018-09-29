@@ -150,7 +150,7 @@ def obtener_subcategorias(request):
         if SubCategoria.objects.filter(estado = estado_habilitado).__len__() < 1:
             raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_SUBCATEGORIAS_INEXISTENTES)
         else:
-            subcategorias = SubCategoria.objects.filter(estado=estado_habilitado)
+            subcategorias = SubCategoria.objects.filter(estado=estado_habilitado).order_by('-codigo')
             response.content = armar_response_list_content(subcategorias)
             response.status_code = 200
             return response
@@ -204,7 +204,7 @@ def obtener_subcategorias_categoriaid(request,id_categoria):
             estado_habilitado_subcategoria = EstadoSubCategoria.objects.get(nombre=ESTADO_HABILITADO)
             if SubCategoria.objects.filter(categoria = id_categoria, estado=estado_habilitado_subcategoria).__len__()>=1:
                 subcategorias = SubCategoria.objects.filter(categoria=id_categoria,
-                                                            estado=estado_habilitado_subcategoria)
+                                                            estado=estado_habilitado_subcategoria).order_by('-codigo')
                 response.content = armar_response_list_content(subcategorias)
                 response.status_code = 200
                 return response
@@ -235,7 +235,7 @@ def obtener_subcategorias_no_categoriaid(request,id_categoria):
             if SubCategoria.objects.filter(estado=estado_habilitado_subcategoria).exclude(categoria = id_categoria).__len__()<1:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_SUBCATEGORIAS_INEXISTENTES)
             else:
-                subcategorias = SubCategoria.objects.filter(estado=estado_habilitado_subcategoria).exclude(categoria=id_categoria)
+                subcategorias = SubCategoria.objects.filter(estado=estado_habilitado_subcategoria).exclude(categoria=id_categoria).order_by('-codigo')
                 response.content = armar_response_list_content(subcategorias)
                 response.status_code = 200
                 return response
