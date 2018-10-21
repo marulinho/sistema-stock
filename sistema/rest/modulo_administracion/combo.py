@@ -29,7 +29,7 @@ def registrar_combo(request):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_NOMBRE_COMBO_FALTANTE)
 
 
-            if LISTA_PRODUCTOS in datos and not (LISTA_PRODUCTOS == []):
+            if LISTA_PRODUCTOS in datos and not (datos[LISTA_PRODUCTOS] == []):
                 lista_productos = datos[LISTA_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE)
@@ -186,7 +186,8 @@ def obtener_combo_id(request, id_combo):
                                                 combo_detalle[x].precio_unitario_producto_combo,
                                                 combo_detalle[x].margen_ganancia_producto_combo,
                                                 combo_detalle[x].cantidad,
-                                                combo_detalle[x].subtotal)
+                                                combo_detalle[x].subtotal,
+                                                combo_detalle[x].producto.stock_local)
             dto_lista_detalle_combo.append(dto_combo_detalle)
         dto_lista_combo = DTOListaCombo(dto_cabecera_combo,dto_lista_detalle_combo)
         response.content = armar_response_content(dto_lista_combo)
@@ -232,7 +233,8 @@ def obtener_combos_vigentes(request):
                                                     detalle_combo[y].precio_unitario_producto_combo,
                                                     detalle_combo[y].margen_ganancia_producto_combo,
                                                     detalle_combo[y].cantidad,
-                                                    detalle_combo[y].subtotal)
+                                                    detalle_combo[y].subtotal,
+                                                    detalle_combo[y].producto.stock_local)
                 lista_dto_combo_detalles.append(dto_combo_detalle)
             dto_lista_combo = DTOListaCombo(dto_combo,lista_dto_combo_detalles)
             lista_dto_combo.append(dto_lista_combo)

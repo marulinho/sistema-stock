@@ -35,25 +35,65 @@ def registrar_venta(request):
 
             usuario = Usuario.objects.get(id = id_usuario)
 
+            if ID_CLIENTE in datos and not (datos[ID_CLIENTE]==''):
+                id_cliente = datos[ID_CLIENTE]
+
+                if Cliente.objects.filter(codigo = id_cliente).__len__()<1:
+                   raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_ID_CLIENTE_FALTANTE)
+
+                cliente  = Cliente.objects.get(codigo = id_cliente)
+
+            else:
+                cliente = None
+
+            if MEDIO_PAGO in datos and not (datos[MEDIO_PAGO] == ''):
+                medio_pago = datos[MEDIO_PAGO]
+
+                if FormaPago.objects.filter(nombre=medio_pago).__len__()<1:
+                    raise ValueError (ERROR_DATOS_INCORRECTOS,DETALLE_FORMA_PAGO_FALTANTE)
+                else:
+                    forma_pago = FormaPago.objects.get(nombre=medio_pago)
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_FORMA_PAGO_FALTANTE)
+
             if DESCUENTO in datos and not DESCUENTO == '' and datos[DESCUENTO] >=0:
                 descuento = datos[DESCUENTO]
             else:
                 descuento = None
 
-            if LISTA_PRODUCTOS in datos and (not (LISTA_PRODUCTOS == []) or LISTA_PRODUCTOS.__len__()==0):
+            if LISTA_PRODUCTOS in datos and (not datos[LISTA_PRODUCTOS] == []):
                 lista_productos = datos[LISTA_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE) #es un msj de error generico
 
+            if CANTIDAD_PRODUCTOS in datos and (not datos[CANTIDAD_PRODUCTOS] == []):
+                cantidad_productos = datos[CANTIDAD_PRODUCTOS]
+
+            for x in range(0, cantidad_productos.__len__()):
+                if cantidad_productos[x] <= 0:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_MENOR)
+
             if list(duplicates(lista_productos)):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS)
 
-            if CANTIDAD_PRODUCTOS in datos and (not CANTIDAD_PRODUCTOS == [] or CANTIDAD_PRODUCTOS.__len__()==0):
-                cantidad_productos = datos[CANTIDAD_PRODUCTOS]
+            if LISTA_COMBOS in datos and (not datos[LISTA_COMBOS] == []):
+                lista_combos = datos[LISTA_COMBOS]
             else:
+                lista_combos=[]
+
+            if list(duplicates(lista_combos)):
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_COMBO_REPETIDOS)
+
+            if CANTIDAD_PRODUCTOS_COMBO in datos and (not datos[CANTIDAD_PRODUCTOS_COMBO] == []):
+                cantidad_productos_combo = datos[CANTIDAD_PRODUCTOS_COMBO]
+            else:
+                cantidad_productos_combo = []
+
+            if (CANTIDAD_PRODUCTOS_COMBO not in datos or (datos[CANTIDAD_PRODUCTOS_COMBO] == [])) and (CANTIDAD_PRODUCTOS not in datos or(datos[CANTIDAD_PRODUCTOS] == [])):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE)
-            for x in range(0, cantidad_productos.__len__()):
-                if cantidad_productos[x] <= 0:
+
+            for x in range(0, cantidad_productos_combo.__len__()):
+                if cantidad_productos_combo[x] <= 0:
                     raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_MENOR)
 
             if (cantidad_productos.__len__() != lista_productos.__len__()):
@@ -69,13 +109,30 @@ def registrar_venta(request):
             estado_creado = EstadoMovimientoStock.objects.get(nombre = ESTADO_CREADO)
             tipo_movimiento_stock = TipoMovimientoStock.objects.get(nombre = MOVIMIENTO_VENTA)
 
-            movimiento_stock_venta = MovimientoStock(fecha_creacion = datetime.datetime.now(pytz.utc),
+            if medio_pago == FORMA_PAGO_CUENTA_CORRIENTE and cliente is None:
+                raise ValueError(ERROR_DATOS_INCORRECTOS,DETALLE_ERROR_ID_CLIENTE_FALTANTE)
+
+            if cliente is None:
+
+                movimiento_stock_venta = MovimientoStock(fecha_creacion = datetime.datetime.now(pytz.utc),
                                                       total_parcial = 0,
                                                       total_final = 0,
                                                       descuento = descuento,
                                                       usuario = usuario,
                                                       tipo_movimiento = tipo_movimiento_stock,
-                                                      estado = estado_creado)
+                                                      estado = estado_creado,
+                                                      cliente = None,
+                                                      forma_pago = forma_pago)
+            else:
+                movimiento_stock_venta = MovimientoStock(fecha_creacion=datetime.datetime.now(pytz.utc),
+                                                         total_parcial=0,
+                                                         total_final=0,
+                                                         descuento=descuento,
+                                                         usuario=usuario,
+                                                         tipo_movimiento=tipo_movimiento_stock,
+                                                         estado=estado_creado,
+                                                         cliente=cliente,
+                                                         forma_pago=forma_pago)
             movimiento_stock_venta.saveNewMovimientoStock()
 
             for x in range(lista_productos.__len__()):
@@ -94,14 +151,47 @@ def registrar_venta(request):
 
                 movimiento_stock_detalle = MovimientoStockDetalle(cantidad = cantidad_productos[x] ,
                                                                   precio_unitario = detalle_lista_precio.precio_unitario_venta,
+                                                                  precio_compra = detalle_lista_precio.precio_unitario_compra,
                                                                   subtotal = detalle_lista_precio.precio_unitario_venta * cantidad_productos[x],
                                                                   movimiento_stock= movimiento_stock_venta,
-                                                                  producto= producto_actual)
+                                                                  producto= producto_actual,
+                                                                  combo = None)
                 movimiento_stock_detalle.save()
-                movimiento_stock_venta.total_parcial += movimiento_stock_detalle.cantidad * movimiento_stock_detalle.precio_unitario
+                movimiento_stock_venta.total_parcial += movimiento_stock_detalle.subtotal
 
-                producto_actual.stock_local = producto_actual.stock_local - cantidad_productos[x]
+                producto_actual.stock_local -= cantidad_productos[x]
                 producto_actual.save()
+
+            for x in range(0,lista_combos.__len__()):
+                if Combo.objects.filter(codigo = lista_combos[x]).__len__()<1:
+                    raise ValueError(DETALLE_ERROR_DATOS_INCOMPLETOS,DETALLE_ERROR_CODIGO_COMBO_INEXISTENTE)
+
+                combo = Combo.objects.get(codigo = lista_combos[x])
+                movimiento_stock_detalle = MovimientoStockDetalle(cantidad=cantidad_productos_combo[x],
+                                                                  precio_unitario=combo.precio,
+                                                                  precio_compra=None,
+                                                                  subtotal=combo.precio * cantidad_productos_combo[x],
+                                                                  movimiento_stock=movimiento_stock_venta,
+                                                                  producto=None,
+                                                                  combo = combo)
+                movimiento_stock_detalle.save()
+
+                if ComboDetalle.objects.filter(combo = combo).__len__()<1:
+                    raise ValueError(DETALLE_ERROR_DATOS_INCOMPLETOS, DETALLE_ERROR_COMBO_SIN_DETALLE)
+
+                detalle_combo = ComboDetalle.objects.filter(combo = combo)
+
+                for y in range(0,detalle_combo.__len__()):
+                    producto_actual = Producto.objects.get(codigo=detalle_combo[y].producto.codigo)
+
+                    if producto_actual.stock_local < detalle_combo[y].cantidad * cantidad_productos_combo[x]:
+                        raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_STOCK_INSUFICIENTE_VENTA)
+
+                    movimiento_stock_venta.save()
+                    movimiento_stock_venta.total_parcial += detalle_combo[y].subtotal * cantidad_productos_combo[x]
+
+                    producto_actual.stock_local -= cantidad_productos_combo[x]
+                    producto_actual.save()
 
             #aplicamos el descuento si corresponde
             if descuento is not None:
@@ -110,14 +200,26 @@ def registrar_venta(request):
                 movimiento_stock_venta.total_final = movimiento_stock_venta.total_parcial
             movimiento_stock_venta.save()
 
-            dto_venta = DTOCabeceraMovimientoStock(movimiento_stock_venta.codigo,
-                                                      movimiento_stock_venta.fecha_creacion,
+            if cliente is None:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_stock_venta.codigo,
+                                                      parsear_fecha_a_hora_arg(movimiento_stock_venta.fecha_creacion),
                                                       movimiento_stock_venta.total_parcial,
                                                       movimiento_stock_venta.descuento,
                                                       movimiento_stock_venta.total_final,
                                                       movimiento_stock_venta.usuario.nombre,
                                                       movimiento_stock_venta.estado.nombre,
-                                                      movimiento_stock_venta.tipo_movimiento.nombre)
+                                                      movimiento_stock_venta.tipo_movimiento.nombre,
+                                                      None)
+            else:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_stock_venta.codigo,
+                                                       parsear_fecha_a_hora_arg(movimiento_stock_venta.fecha_creacion),
+                                                       movimiento_stock_venta.total_parcial,
+                                                       movimiento_stock_venta.descuento,
+                                                       movimiento_stock_venta.total_final,
+                                                       movimiento_stock_venta.usuario.nombre,
+                                                       movimiento_stock_venta.estado.nombre,
+                                                       movimiento_stock_venta.tipo_movimiento.nombre,
+                                                       movimiento_stock_venta.cliente.nombre +' '+movimiento_stock_venta.cliente.apellido)
 
             response.content = armar_response_content(dto_venta)
             response.status_code = 200
@@ -182,14 +284,25 @@ def cancelar_venta(request):
                 movimiento_entrada_capital.save()
             movimiento_venta.estado = estado_cancelado_venta
             movimiento_venta.save()
-            dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
-                                                   movimiento_venta.fecha_creacion,
+            if movimiento_venta.cliente is None:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                   parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
                                                    movimiento_venta.total_parcial,
                                                    movimiento_venta.descuento,
                                                    movimiento_venta.total_final,
                                                    movimiento_venta.usuario.nombre,
                                                    movimiento_venta.estado.nombre,
                                                    movimiento_venta.tipo_movimiento.nombre)
+            else:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                       parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
+                                                       movimiento_venta.total_parcial,
+                                                       movimiento_venta.descuento,
+                                                       movimiento_venta.total_final,
+                                                       movimiento_venta.usuario.nombre,
+                                                       movimiento_venta.estado.nombre,
+                                                       movimiento_venta.tipo_movimiento.nombre,
+                                                       movimiento_venta.cliente.nombre +' '+movimiento_venta.cliente.apellido)
             response.content = armar_response_content(dto_venta)
             response.status_code = 200
             return response
@@ -225,14 +338,25 @@ def cobrar_venta(request):
             estado_pagado_venta = EstadoMovimientoStock.objects.get(nombre = ESTADO_PAGADO)
             movimiento_venta.estado = estado_pagado_venta
             movimiento_venta.save()
-            dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
-                                                   movimiento_venta.fecha_creacion,
+            if movimiento_venta.cliente is None:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                   parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
                                                    movimiento_venta.total_parcial,
                                                    movimiento_venta.descuento,
                                                    movimiento_venta.total_final,
                                                    movimiento_venta.usuario.nombre,
                                                    movimiento_venta.estado.nombre,
                                                    movimiento_venta.tipo_movimiento.nombre)
+            else:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                       parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
+                                                       movimiento_venta.total_parcial,
+                                                       movimiento_venta.descuento,
+                                                       movimiento_venta.total_final,
+                                                       movimiento_venta.usuario.nombre,
+                                                       movimiento_venta.estado.nombre,
+                                                       movimiento_venta.tipo_movimiento.nombre,
+                                                       movimiento_venta.cliente.nombre +' '+movimiento_venta.cliente.apellido)
             response.content = armar_response_content(dto_venta)
             response.status_code = 200
             return response
@@ -277,14 +401,26 @@ def cambiar_estado_venta(request):
 
             movimiento_venta.estado = estado_venta
             movimiento_venta.save()
-            dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
-                                                    movimiento_venta.fecha_creacion,
-                                                    movimiento_venta.total_parcial,
-                                                    movimiento_venta.descuento,
-                                                    movimiento_venta.total_final,
-                                                    movimiento_venta.usuario.nombre,
-                                                    movimiento_venta.estado.nombre,
-                                                    movimiento_venta.tipo_movimiento.nombre)
+
+            if movimiento_venta.cliente is None:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                   parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
+                                                   movimiento_venta.total_parcial,
+                                                   movimiento_venta.descuento,
+                                                   movimiento_venta.total_final,
+                                                   movimiento_venta.usuario.nombre,
+                                                   movimiento_venta.estado.nombre,
+                                                   movimiento_venta.tipo_movimiento.nombre)
+            else:
+                dto_venta = DTOCabeceraMovimientoStock(movimiento_venta.codigo,
+                                                       parsear_fecha_a_hora_arg(movimiento_venta.fecha_creacion),
+                                                       movimiento_venta.total_parcial,
+                                                       movimiento_venta.descuento,
+                                                       movimiento_venta.total_final,
+                                                       movimiento_venta.usuario.nombre,
+                                                       movimiento_venta.estado.nombre,
+                                                       movimiento_venta.tipo_movimiento.nombre,
+                                                       movimiento_venta.cliente.nombre +' '+movimiento_venta.cliente.apellido)
             response.content = armar_response_content(dto_venta)
             response.status_code = 200
             return response
@@ -340,7 +476,7 @@ def generar_movimiento_capital_venta_movimiento_stock(request):
             movimiento_capital_entrada.saveNewMovimientoCapital()
             dto_movimiento_capital = DTOMovimientoCapital(movimiento_capital_entrada.codigo,
                                                           movimiento_capital_entrada.total,
-                                                          movimiento_capital_entrada.fecha_creacion,
+                                                          parsear_fecha_a_hora_arg(movimiento_capital_entrada.fecha_creacion),
                                                           movimiento_capital_entrada.descripcion_movimiento,
                                                           movimiento_capital_entrada.tipo_movimiento.nombre,
                                                           movimiento_capital_entrada.estado.nombre,
@@ -373,14 +509,25 @@ def obtener_ventas(request):
         ventas = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_venta).order_by('-codigo')
         lista_ventas = []
         for x in range(0,ventas.__len__()):
-            dto_venta = DTOCabeceraMovimientoStock(ventas[x].codigo,
-                                                   ventas[x].fecha_creacion,
-                                                   ventas[x].total_parcial,
-                                                   ventas[x].descuento,
-                                                   ventas[x].total_final,
-                                                   ventas[x].usuario.nombre,
-                                                   ventas[x].estado.nombre,
-                                                   ventas[x].tipo_movimiento.nombre)
+            if ventas[x].cliente is None:
+                dto_venta = DTOCabeceraMovimientoStock(ventas[x].codigo,
+                                                       parsear_fecha_a_hora_arg(ventas[x].fecha_creacion),
+                                                       ventas[x].total_parcial,
+                                                       ventas[x].descuento,
+                                                       ventas[x].total_final,
+                                                       ventas[x].usuario.nombre,
+                                                       ventas[x].estado.nombre,
+                                                       ventas[x].tipo_movimiento.nombre)
+            else:
+                dto_venta = DTOCabeceraMovimientoStock(ventas[x].codigo,
+                                                       parsear_fecha_a_hora_arg(ventas[x].fecha_creacion),
+                                                       ventas[x].total_parcial,
+                                                       ventas[x].descuento,
+                                                       ventas[x].total_final,
+                                                       ventas[x].usuario.nombre,
+                                                       ventas[x].estado.nombre,
+                                                       ventas[x].tipo_movimiento.nombre,
+                                                       ventas[x].cliente.nombre + ' ' + ventas[x].cliente.apellido)
             lista_ventas.append(dto_venta)
 
         response.content = armar_response_list_content(lista_ventas)
@@ -418,31 +565,53 @@ def obtener_venta_id(request,id_venta):
 
         dto_venta = []
         dto_detalles_venta = []
-        dto_cabecera_venta = DTOCabeceraMovimientoStock(venta.codigo,
-                                                        venta.fecha_creacion,
+
+        if  venta.cliente is None:
+            dto_cabecera_venta = DTOCabeceraMovimientoStock(venta.codigo,
+                                                        parsear_fecha_a_hora_arg(venta.fecha_creacion),
                                                         venta.total_parcial,
                                                         venta.descuento,
                                                         venta.total_final,
                                                         venta.usuario.nombre,
                                                         venta.estado.nombre,
                                                         venta.tipo_movimiento.nombre)
+        else:
+            dto_cabecera_venta = DTOCabeceraMovimientoStock(venta.codigo,
+                                                            parsear_fecha_a_hora_arg(venta.fecha_creacion),
+                                                            venta.total_parcial,
+                                                            venta.descuento,
+                                                            venta.total_final,
+                                                            venta.usuario.nombre,
+                                                            venta.estado.nombre,
+                                                            venta.tipo_movimiento.nombre,
+                                                            venta.cliente.nombre + ' ' + venta.cliente.apellido)
 
         for x in range(movimiento_detalle_venta.__len__()):
 
-            if Producto.objects.filter(codigo=movimiento_detalle_venta[x].producto.codigo).__len__() < 1:
-                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE)
+            if movimiento_detalle_venta[x].producto is not None:
+                if Producto.objects.filter(codigo=movimiento_detalle_venta[x].producto.codigo).__len__() < 1:
+                    raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_PRODUCTO_INEXISTENTE)
 
-            producto = Producto.objects.get(codigo=movimiento_detalle_venta[x].producto.codigo)
+                producto = Producto.objects.get(codigo=movimiento_detalle_venta[x].producto.codigo)
 
-            dto_detalle_venta = DTOMovimientoStockDetalle(producto.codigo,
-                                                           producto.nombre,
-                                                           producto.marca,
-                                                           producto.unidad_medida.nombre,
-                                                           producto.medida,
-                                                           movimiento_detalle_venta[x].precio_unitario,
-                                                           movimiento_detalle_venta[x].subtotal,
-                                                           movimiento_detalle_venta[x].cantidad)
-
+                dto_detalle_venta = DTOMovimientoStockDetalle(producto.codigo,
+                                                               producto.nombre,
+                                                               producto.marca,
+                                                               producto.unidad_medida.nombre,
+                                                               producto.medida,
+                                                               movimiento_detalle_venta[x].precio_unitario,
+                                                               movimiento_detalle_venta[x].subtotal,
+                                                               movimiento_detalle_venta[x].cantidad)
+            else:
+                #se trata de un combo
+                dto_detalle_venta = DTOMovimientoStockDetalle(movimiento_detalle_venta[x].combo.codigo,
+                                                              movimiento_detalle_venta[x].combo.nombre,
+                                                              None,
+                                                              None,
+                                                              None,
+                                                              movimiento_detalle_venta[x].precio_unitario,
+                                                              movimiento_detalle_venta[x].subtotal,
+                                                              movimiento_detalle_venta[x].cantidad)
             dto_detalles_venta.append(dto_detalle_venta)
         dto_venta = DTOListaMovimientoStock(dto_cabecera_venta,dto_detalles_venta)
         response.content = armar_response_content(dto_venta)

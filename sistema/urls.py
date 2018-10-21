@@ -10,11 +10,13 @@ from sistema.rest.modulo_administracion import producto
 from sistema.rest.modulo_administracion import unidad_medida
 from sistema.rest.modulo_administracion import combo
 from sistema.rest.modulo_administracion import lista_precio
+from sistema.rest.modulo_administracion import sorteo
 from sistema.rest.modulo_finanzas import compra
 from sistema.rest.modulo_finanzas import retiro
 from sistema.rest.modulo_finanzas import remito
 from sistema.rest.modulo_finanzas import caja
 from sistema.rest.modulo_finanzas import ventas
+from sistema.rest.modulo_reportes import reporte
 
 urlpatterns = [
 
@@ -136,4 +138,13 @@ urlpatterns = [
     url(r'^registrarRemito/$', remito.registrar_remito, name='registrarRemito'),
     url(r'^cancelarRemito/$', remito.cancelar_remito, name='cancelarRemito'),
 
+    # SORTEO
+    url(r'^registrarSorteo/$', sorteo.registrar_sorteo, name='registrarSorteo'),
+    url(r'^obtenerSorteos/$', sorteo.obtener_sorteos, name='obtenerSorteos'),
+    url(r'^obtenerSorteoId/(?P<id_sorteo>[0-9]+)/$', sorteo.obtener_sorteo_id, name='obtenerSorteoId'),
+
+    # REPORTES
+    url(r'^obtenerReporteStockMinimo/$', reporte.obtener_reporte_stock_minimo, name='obtenerReporteStockMinimo'),
+    url(r'^obtenerReporteComprasVentas/$', reporte.obtener_reporte_compras_ventas, name='obtenerReporteComprasVentas'),
+    url(r'^obtenerReporteGananciaProducto/$', reporte.obtener_reporte_ganancia_producto, name='obtenerReporteGananciaProducto'),
 ]

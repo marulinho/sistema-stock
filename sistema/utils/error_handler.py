@@ -28,6 +28,7 @@ DETALLE_ERROR_REGISTRACION_DIRECCION_FALTANTE = "Debe ingresar la direccion del 
 DETALLE_ERROR_REGISTRACION_TIPO_CLIENTE_FALTANTE = "Debe ingresar el tipo de cliente"
 DETALLE_ERROR_TIPO_CLIENTE_INEXISTENTE = "No existe el tipo de cliente ingresado"
 DETALLE_ERROR_CLIENTE_EXISTENTE = "Cliente existente, reintente con otros datos"
+DETALLE_ERROR_CLIENTE_INEXISTENTE = "No existe el cliente ingresado"
 DETALLE_ERROR_ID_CLIENTE_FALTANTE = "Debe ingresar el identificador del cliente"
 DETALLE_ERROR_CLIENTES_INHABILITADOS = "No existen clientes habilitados"
 DETALLE_ERROR_REGISTRACION_PREGUNTA_FALTANTE = "Debe seleccionar una pregunta de seguridad"
@@ -91,6 +92,7 @@ DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE = 'Debe ingresar una lista de produc
 DETALLE_ERROR_LISTA_PRODUCTO_COMBO_LONGITUD_INSUFICIENTE = 'Debe ingresar dos o más productos'
 DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE = 'Debe ingresar una cantidad para cada producto la lista'
 DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS = 'No se puede ingresar dos o más veces el mismo producto'
+DETALLE_ERROR_LISTA_COMBO_REPETIDOS = 'No se puede ingresar dos o mas veces el mismo combo'
 DETALLE_ERROR_CANTIDAD_LISTA_PRODUCTO_COMBO_LONGITUD_DISTINTA = 'Debe ingresar una cantidad y precio por cada producto seleccionado'
 DETALLE_ERROR_CANTIDAD_LISTA_PRODUCTO_COMPRA_LONGITUD_DISTINTA = 'Debe ingresar una cantidad para cada producto'
 DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_MENOR = 'Debe ingresar cantidades mayores a cero'
@@ -155,6 +157,21 @@ DETALLE_ERROR_VENTA_CANCELADA = 'La venta ya ha sido cancelada'
 DETALLE_ERROR_VENTA_SIN_MOVIMIENTO_CAPITAL = 'La venta no tiene asociada un movimiento de entrada de capital'
 DETALLE_ERROR_RETIROS_INEXISTENTES = 'No existen retiros de capital'
 DETALLE_ERROR_CODIGO_RETIRO_FALTANTE = 'Debe ingresar el codigo del retiro'
+DETALLE_ERROR_NOMBRE_SORTEO_EXISTENTE = 'El nombre ingresado ya existe, por favor ingrese otro'
+DETALLE_ERROR_CANTIDAD_SORTEO_MAYOR = 'La cantidad de productos a sortear debe ser menor o igual que la disponible'
+DETALLE_ERROR_NOMBRE_FALTANTE = 'Debe ingresar el nombre'
+DETALLE_ERROR_LISTA_SORTEO_FALTANTE = 'Debe ingresar los ganadores con los respectivos productos'
+DETALLE_ERROR_SORTEOS_INEXISTENTES = 'No existen sorteos habilitados'
+DETALLE_ERROR_CODIGO_SORTEO_FALTANTE= 'Debe ingresar el codigo del sorteo'
+DETALLE_ERROR_SORTEO_INEXISTENTE= 'No existe un sorteo con el codigo ingresado'
+DETALLE_ERROR_SORTEO_SIN_DETALLE= 'El sorteo no tiene asociado detalles'
+DETALLE_ERROR_CANTIDAD_PRODUCTO_FALTANTE = 'Debe ingresar la cantidad de productos'
+DETALLE_ERROR_FECHA_DESDE_FALTANTE = 'Debe ingresar la fecha de origen'
+DETALLE_ERROR_FECHA_HASTA_FALTANTE = 'Debe ingresar la fecha de destino'
+DETALLE_ERROR_FECHA_DESDE_MAYOR_HASTA = 'La fecha hasta debe ser mayor o igual a la fecha desde'
+DETALLE_ERROR_COMPRAS_VENTAS_CERO = 'No se han realizado transacciones en el perído de tiempo seleccionado'
+DETALLE_ERROR_LISTA_PRECIO_INEXISTENTE = 'No existe una lista de precio para el periodo seleccionado'
+DETALLE_FORMA_PAGO_FALTANTE = 'Debe ingresar el medio de pago'
 
 # Metodos
 

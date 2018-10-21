@@ -36,12 +36,24 @@ def registrar_compra(request):
 
             usuario = Usuario.objects.get(id = id_usuario)
 
-            if DESCUENTO in datos and not DESCUENTO == '' and datos[DESCUENTO] >0:
+            tipo_cliente = TipoCliente.objects.get(nombre = CLIENTE_PROVEEDOR)
+
+            if ID_CLIENTE in datos and not datos[ID_CLIENTE] == '':
+                id_cliente = datos[ID_CLIENTE]
+            else:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_ID_CLIENTE_FALTANTE)
+
+            if Cliente.objects.filter(codigo = id_cliente, tipo_cliente = tipo_cliente).__len__()<1:
+                raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CLIENTE_INEXISTENTE)
+
+            cliente = Cliente.objects.get(codigo = id_cliente, tipo_cliente = tipo_cliente)
+
+            if DESCUENTO in datos and not DESCUENTO == '' and datos[DESCUENTO] >=0:
                 descuento = datos[DESCUENTO]
             else:
                 descuento = None
 
-            if LISTA_PRODUCTOS in datos and not (LISTA_PRODUCTOS == []):
+            if LISTA_PRODUCTOS in datos and not (datos[LISTA_PRODUCTOS] == []):
                 lista_productos = datos[LISTA_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE) #es un msj de error generico
@@ -49,7 +61,7 @@ def registrar_compra(request):
             if list(duplicates(lista_productos)):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS)
 
-            if CANTIDAD_PRODUCTOS in datos and not (CANTIDAD_PRODUCTOS == []):
+            if CANTIDAD_PRODUCTOS in datos and not (datos[CANTIDAD_PRODUCTOS] == []):
                 cantidad_productos = datos[CANTIDAD_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE)
@@ -76,6 +88,7 @@ def registrar_compra(request):
                                                       descuento = descuento,
                                                       usuario = usuario,
                                                       tipo_movimiento = tipo_movimiento_stock,
+                                                      cliente = cliente,
                                                       estado = estado_creado)
             movimiento_stock_compra.saveNewMovimientoStock()
 
@@ -107,7 +120,17 @@ def registrar_compra(request):
             else:
                 movimiento_stock_compra.total_final = movimiento_stock_compra.total_parcial
             movimiento_stock_compra.save()
-            response.content = armar_response_content(None, CREACION_COMPRA)
+
+            dto_compra = DTOCabeceraMovimientoStock(movimiento_stock_compra.codigo,
+                                                    parsear_fecha_a_hora_arg(movimiento_stock_compra.fecha_creacion),
+                                                    movimiento_stock_compra.total_parcial,
+                                                    movimiento_stock_compra.descuento,
+                                                    movimiento_stock_compra.total_final,
+                                                    movimiento_stock_compra.usuario.nombre,
+                                                    movimiento_stock_compra.estado.nombre,
+                                                    movimiento_stock_compra.tipo_movimiento.nombre,
+                                                    movimiento_stock_compra.cliente.nombre + ' ' + movimiento_stock_compra.cliente.apellido)
+            response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
     except ValueError as err:
@@ -161,13 +184,14 @@ def cancelar_compra(request):
             movimiento_compra.estado = estado_cancelado_compra
             movimiento_compra.save()
             dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
-                                                    movimiento_compra.fecha_creacion,
+                                                    parsear_fecha_a_hora_arg(movimiento_compra.fecha_creacion),
                                                     movimiento_compra.total_parcial,
                                                     movimiento_compra.descuento,
                                                     movimiento_compra.total_final,
                                                     movimiento_compra.usuario.nombre,
                                                     movimiento_compra.estado.nombre,
-                                                    movimiento_compra.tipo_movimiento.nombre)
+                                                    movimiento_compra.tipo_movimiento.nombre,
+                                                    movimiento_compra.cliente.nombre + ' ' + movimiento_compra.cliente.apellido)
             response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
@@ -204,13 +228,14 @@ def pagar_compra(request):
             movimiento_compra.estado = estado_pagado_compra
             movimiento_compra.save()
             dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
-                                                    movimiento_compra.fecha_creacion,
+                                                    parsear_fecha_a_hora_arg(movimiento_compra.fecha_creacion),
                                                     movimiento_compra.total_parcial,
                                                     movimiento_compra.descuento,
                                                     movimiento_compra.total_final,
                                                     movimiento_compra.usuario.nombre,
                                                     movimiento_compra.estado.nombre,
-                                                    movimiento_compra.tipo_movimiento.nombre)
+                                                    movimiento_compra.tipo_movimiento.nombre,
+                                                    movimiento_compra.cliente.nombre + ' ' + movimiento_compra.cliente.apellido)
             response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
@@ -256,13 +281,14 @@ def cambiar_estado_compra(request):
             movimiento_compra.estado = estado_compra
             movimiento_compra.save()
             dto_compra = DTOCabeceraMovimientoStock(movimiento_compra.codigo,
-                                                    movimiento_compra.fecha_creacion,
+                                                    parsear_fecha_a_hora_arg(movimiento_compra.fecha_creacion),
                                                     movimiento_compra.total_parcial,
                                                     movimiento_compra.descuento,
                                                     movimiento_compra.total_final,
                                                     movimiento_compra.usuario.nombre,
                                                     movimiento_compra.estado.nombre,
-                                                    movimiento_compra.tipo_movimiento.nombre)
+                                                    movimiento_compra.tipo_movimiento.nombre,
+                                                    movimiento_compra.cliente.nombre + ' ' + movimiento_compra.cliente.apellido)
             response.content = armar_response_content(dto_compra)
             response.status_code = 200
             return response
@@ -318,7 +344,7 @@ def generar_movimiento_capital_compra_movimiento_stock(request):
             movimiento_capital_salida.saveNewMovimientoCapital()
             dto_movimiento_capital = DTOMovimientoCapital(movimiento_capital_salida.codigo,
                                                           movimiento_capital_salida.total,
-                                                          movimiento_capital_salida.fecha_creacion,
+                                                          parsear_fecha_a_hora_arg(movimiento_capital_salida.fecha_creacion),
                                                           movimiento_capital_salida.descripcion_movimiento,
                                                           movimiento_capital_salida.tipo_movimiento.nombre,
                                                           movimiento_capital_salida.estado.nombre,
@@ -352,14 +378,26 @@ def obtener_compras(request):
         compras = MovimientoStock.objects.filter(tipo_movimiento = tipo_movimiento_compra).order_by('-codigo')
         lista_compras = []
         for x in range(0,compras.__len__()):
-            dto_compra = DTOCabeceraMovimientoStock(compras[x].codigo,
-                                                    compras[x].fecha_creacion,
-                                                    compras[x].total_parcial,
-                                                    compras[x].descuento,
-                                                    compras[x].total_final,
-                                                    compras[x].usuario.nombre,
-                                                    compras[x].estado.nombre,
-                                                    compras[x].tipo_movimiento.nombre)
+            if compras[x].cliente is None:
+                dto_compra = DTOCabeceraMovimientoStock(compras[x].codigo,
+                                                        parsear_fecha_a_hora_arg(compras[x].fecha_creacion),
+                                                        compras[x].total_parcial,
+                                                        compras[x].descuento,
+                                                        compras[x].total_final,
+                                                        compras[x].usuario.nombre,
+                                                        compras[x].estado.nombre,
+                                                        compras[x].tipo_movimiento.nombre,
+                                                        None)
+            else:
+                dto_compra = DTOCabeceraMovimientoStock(compras[x].codigo,
+                                                        parsear_fecha_a_hora_arg(compras[x].fecha_creacion),
+                                                        compras[x].total_parcial,
+                                                        compras[x].descuento,
+                                                        compras[x].total_final,
+                                                        compras[x].usuario.nombre,
+                                                        compras[x].estado.nombre,
+                                                        compras[x].tipo_movimiento.nombre,
+                                                        compras[x].cliente.nombre + ' ' + compras[x].cliente.apellido)
             lista_compras.append(dto_compra)
 
         response.content = armar_response_list_content(lista_compras)
@@ -398,13 +436,14 @@ def obtener_compra_id(request,id_compra):
         dto_compra = []
         dto_detalles_compra = []
         dto_cabecera_compra = DTOCabeceraMovimientoStock(compra.codigo,
-                                                         compra.fecha_creacion,
+                                                         parsear_fecha_a_hora_arg(compra.fecha_creacion),
                                                          compra.total_parcial,
                                                          compra.descuento,
                                                          compra.total_final,
                                                          compra.usuario.nombre,
                                                          compra.estado.nombre,
-                                                         compra.tipo_movimiento.nombre)
+                                                         compra.tipo_movimiento.nombre,
+                                                         compra.cliente.nombre + ' ' + compra.cliente.apellido)
 
         for x in range(movimiento_detalle_compra.__len__()):
 

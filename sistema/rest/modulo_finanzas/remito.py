@@ -36,7 +36,7 @@ def registrar_remito(request):
 
             usuario = Usuario.objects.get(id = id_usuario)
 
-            if LISTA_PRODUCTOS in datos and not (LISTA_PRODUCTOS == []):
+            if LISTA_PRODUCTOS in datos and not (LISTA_PRODUCTOS == []) and datos[LISTA_PRODUCTOS].__len__()>=1:
                 lista_productos = datos[LISTA_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_FALTANTE) #es un msj de error generico
@@ -44,7 +44,7 @@ def registrar_remito(request):
             if list(duplicates(lista_productos)):
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LISTA_PRODUCTO_COMBO_PRODUCTOS_REPETIDOS)
 
-            if CANTIDAD_PRODUCTOS in datos and not (CANTIDAD_PRODUCTOS == []):
+            if CANTIDAD_PRODUCTOS in datos and not (CANTIDAD_PRODUCTOS == []) and datos[CANTIDAD_PRODUCTOS].__len__()>=1:
                 cantidad_productos = datos[CANTIDAD_PRODUCTOS]
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_CANTIDAD_PRODUCTO_COMBO_FALTANTE)
@@ -167,7 +167,7 @@ def obtener_remitos(request):
         for x in range(0,movimiento_remito.__len__()):
             lista_remito_detalle = []
             dto_cabecera = DTOCabeceraMovimientoStock(movimiento_remito[x].codigo,
-                                                      movimiento_remito[x].fecha_creacion,
+                                                      parsear_fecha_a_hora_arg(movimiento_remito[x].fecha_creacion),
                                                       movimiento_remito[x].total_parcial,
                                                       movimiento_remito[x].descuento,
                                                       movimiento_remito[x].total_final,
@@ -224,7 +224,7 @@ def obtener_remito_id(request,id_remito):
 
         lista_remito_detalle = []
         dto_cabecera = DTOCabeceraMovimientoStock(  movimiento_remito.codigo,
-                                                    movimiento_remito.fecha_creacion,
+                                                    parsear_fecha_a_hora_arg(movimiento_remito.fecha_creacion),
                                                     movimiento_remito.total_parcial,
                                                     movimiento_remito.descuento,
                                                     movimiento_remito.total_final,

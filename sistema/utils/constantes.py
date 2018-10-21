@@ -76,7 +76,8 @@ TELEFONO = 'telefono'
 DIRECCION = 'direccion'
 TIPO_CLIENTE = 'tipo_cliente'
 ID_CLIENTE = 'id_cliente'
-
+CLIENTE_PROVEEDOR = 'Proveedor'
+CLIENTE_INTERNO = 'Interno'
 #Categoria
 CODIGO = 'codigo'
 MARCA = 'marca'
@@ -93,7 +94,9 @@ STOCK_MINIMO = 'stock_minimo'
 #Combo
 PRECIO = 'precio'
 LISTA_PRODUCTOS = 'lista_productos'
+LISTA_COMBOS = 'lista_combos'
 CANTIDAD_PRODUCTOS = 'cantidad_productos'
+CANTIDAD_PRODUCTOS_COMBO ='cantidad_productos_combo'
 MARGEN_GANANCIA_PRODUCTO_COMBO = 'margen_ganancia_productos_combo'
 
 #ListaPrecio
@@ -103,6 +106,9 @@ LISTA_PRECIOS_VENTA = 'lista_precios_venta'
 #Unidad Medida
 NOMBRE_UNIDAD_MEDIDA  = 'nombre_unidad_medida'
 ID_UNIDAD_MEDIDA = 'id_unidad_medida'
+
+#Sorteo
+LISTA_SORTEO = 'lista_sorteo'
 
 #Movimientos
 MOVIMIENTO_COMPRA = 'Compra'
@@ -116,6 +122,7 @@ FORMA_PAGO_CUENTA_CORRIENTE = 'Cuenta_Corriente'
 FORMA_PAGO_TARJETA_CREDITO = 'Tarjeta_Credito'
 FORMA_PAGO_TARJETA_DEBITO = 'Tarjeta_Debito'
 DESCUENTO = 'descuento'
+MEDIO_PAGO = 'medio_pago'
 PAGO_MOVIMIENTO_CAPITAL = 'Compra nro: '
 COBRO_MOVIMIENTO_CAPITAL = 'Venta nro: '
 RETIRO_MOVIMIENTO_CAPITAL = 'Retiro nro: '

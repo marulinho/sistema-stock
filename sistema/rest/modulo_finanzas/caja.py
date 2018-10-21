@@ -155,8 +155,8 @@ def obtener_ultima_caja(request):
         else:
             caja = Caja.objects.order_by('codigo').last()
 
-        dto_caja_cabecera = DTOCajaCabecera(caja.fecha_apertura,
-                                            caja.fecha_cierre,
+        dto_caja_cabecera = DTOCajaCabecera(parsear_fecha_a_hora_arg(caja.fecha_apertura),
+                                            parsear_fecha_a_hora_arg(caja.fecha_cierre),
                                             caja.total_apertura,
                                             caja.total_cierre,
                                             caja.estado.nombre)

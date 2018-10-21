@@ -1,6 +1,10 @@
+import datetime
 from json import loads, dumps
 
+import pytz
 from django.core.serializers.json import DjangoJSONEncoder
+from pytz import timezone
+
 from sistema.utils.constantes import *
 from sistema.utils.error_handler import *
 
@@ -69,3 +73,9 @@ def armar_response_content(objeto, *mensaje):
     except (KeyError, TypeError, ValueError, SystemError, RuntimeError):
         response_error_dictionary = {KEY_RESULTADO_OPERACION: False, KEY_DETALLE_OPERACION: DETALLE_ERROR_SISTEMA}
         return dumps(response_error_dictionary, cls=DjangoJSONEncoder)
+
+def parsear_fecha_a_hora_arg(fecha_utc):
+    try:
+        return fecha_utc.astimezone(timezone('America/Argentina/Buenos_Aires'))
+    except Exception:
+        return None

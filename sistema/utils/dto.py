@@ -24,7 +24,7 @@ class DTOCombo:
         )
 
 class DTOComboDetalle:
-    def __init__(self, codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, margen_ganancia, cantidad,subtotal):
+    def __init__(self, codigo_producto, nombre_producto, marca_producto, nombre_medida, medida, precio_unitario, margen_ganancia, cantidad,subtotal,stock_local):
         self.codigo = codigo_producto
         self.nombre = nombre_producto
         self.marca = marca_producto
@@ -34,6 +34,7 @@ class DTOComboDetalle:
         self.margen_ganancia = margen_ganancia
         self.cantidad = cantidad
         self.subtotal = subtotal
+        self.stock_local = stock_local
 
     def as_json(self):
         return dict(
@@ -45,7 +46,8 @@ class DTOComboDetalle:
             precio_producto=self.precio,
             margen_ganancia = self.margen_ganancia,
             cantidad = self.cantidad,
-            subtotal = self.subtotal
+            subtotal = self.subtotal,
+            stock_local = self.stock_local
         )
 
 class DTOListaMovimientoStock:
@@ -61,13 +63,14 @@ class DTOListaMovimientoStock:
         )
 
 class DTOCabeceraMovimientoStock:
-    def __init__(self, codigo, fecha_creacion, total_parcial, descuento, total_final, usuario, estado, tipo_movimiento):
+    def __init__(self, codigo, fecha_creacion, total_parcial, descuento, total_final, usuario, estado, tipo_movimiento,cliente=None):
         self.codigo = codigo
         self.fecha_creacion = fecha_creacion
         self.total_parcial = total_parcial
         self.descuento = descuento
         self.total_final = total_final
         self.usuario = usuario
+        self.cliente = cliente
         self.estado = estado
         self.tipo_movimiento = tipo_movimiento
 
@@ -79,6 +82,7 @@ class DTOCabeceraMovimientoStock:
             descuento = self.descuento,
             total_final = self.total_final,
             usuario = self.usuario,
+            cliente = self.cliente,
             estado = self.estado,
             tipo_movimiento = self.tipo_movimiento
         )
@@ -285,4 +289,73 @@ class DTOCliente:
             direccion = self.direccion,
             tipo_cliente = self.tipo_cliente,
             estado = self.estado
+        )
+
+class DTOSorteo:
+    def __init__(self, dto_cabecera, dto_detalle):
+        self.dto_cabecera = dto_cabecera
+        self.dto_detalle = dto_detalle
+
+    def as_json(self):
+        return dict(
+            sorteo_cabecera= self.dto_cabecera.as_json(),
+            sorteo_detalles= [detalle.as_json() for
+                             detalle in self.dto_detalle]
+        )
+
+class DTOSorteoCabecera:
+    def __init__(self, codigo, nombre, estado, fecha_creacion):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.estado = estado
+        self.fecha_creacion = fecha_creacion
+
+    def as_json(self):
+        return dict(
+            codigo=self.codigo,
+            nombre=self.nombre,
+            estado=self.estado,
+            fecha_creacion=self.fecha_creacion
+        )
+
+class DTOSorteoDetalle:
+    def __init__(self, codigo_producto, descripcion_producto, cantidad, posicion, ganador):
+        self.codigo = codigo_producto
+        self.descripcion_producto = descripcion_producto
+        self.cantidad = cantidad
+        self.posicion = posicion
+        self.ganador = ganador
+
+    def as_json(self):
+        return dict(
+            codigo_producto=self.codigo,
+            descripcion_producto=self.descripcion_producto,
+            cantidad=self.cantidad,
+            posicion=self.posicion,
+            ganador=self.ganador
+        )
+
+class DTOReporteComprasVentas:
+    def __init__(self, compras, ventas):
+        self.compras = round(compras,2)
+        self.ventas = round(ventas,2)
+        self.balance = round((self.ventas - self.compras),2)
+
+    def as_json(self):
+        return dict(
+            total_compras = self.compras,
+            total_ventas = self.ventas,
+            total_balance = self.balance
+        )
+class DTOGananciaProducto:
+    def __init__(self,codigo,nombre,marca):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.marca = marca
+
+    def as_json(self):
+        return dict(
+            codigo = self.codigo,
+            nombre = self.nombre,
+            marca = self.marca
         )

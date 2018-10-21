@@ -67,7 +67,7 @@ def generar_retiro_capital(request):
 
             dto_movimiento_capital = DTOMovimientoCapital(movimiento_capital_salida.codigo,
                                                           movimiento_capital_salida.total,
-                                                          movimiento_capital_salida.fecha_creacion,
+                                                          parsear_fecha_a_hora_arg(movimiento_capital_salida.fecha_creacion),
                                                           movimiento_capital_salida.descripcion_movimiento,
                                                           movimiento_capital_salida.tipo_movimiento.nombre,
                                                           movimiento_capital_salida.estado.nombre,
@@ -138,7 +138,7 @@ def obtener_retiros(request):
         for x in range(0,retiros.__len__()):
             dto_retiro = DTOMovimientoCapital(retiros[x].codigo,
                                               retiros[x].total,
-                                              retiros[x].fecha_creacion,
+                                              parsear_fecha_a_hora_arg(retiros[x].fecha_creacion),
                                               retiros[x].descripcion_movimiento,
                                               retiros[x].tipo_movimiento.nombre,
                                               retiros[x].estado.nombre,
@@ -175,7 +175,7 @@ def obtener_retiro_id(request,id_retiro):
 
         dto_retiro = DTOMovimientoCapital(retiro.codigo,
                                           retiro.total,
-                                          retiro.fecha_creacion,
+                                          parsear_fecha_a_hora_arg(retiro.fecha_creacion),
                                           retiro.descripcion_movimiento,
                                           retiro.tipo_movimiento.nombre,
                                           retiro.estado.nombre,

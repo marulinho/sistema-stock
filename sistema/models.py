@@ -355,6 +355,29 @@ class TipoMovimientoStock(models.Model):
     def __str__(self):
         return "Tipo Movimiento de Stock: " + self.nombre
 
+class EstadoFormaPago(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    def __str__(self):
+        return "Estado Forma de Pago: " + self.nombre
+
+class FormaPago(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=50)
+
+    estado = models.ForeignKey(EstadoFormaPago, db_column= 'id_estado')
+
+    def as_json(self):
+        return dict(
+            nombre = self.nombre,
+            descripcion = self.descripcion,
+            estado = self.estado.id
+        )
+
+    def __str__(self):
+        return "Forma de Pago: " + self.nombre
+
 class EstadoMovimientoStock(models.Model):
     nombre = models.CharField(max_length=20)
     descripcion = models.CharField(max_length=50)
@@ -370,8 +393,10 @@ class MovimientoStock(models.Model):
     descuento = models.FloatField(null=True)
 
     usuario = models.ForeignKey(Usuario, db_column='id_usuario')
+    cliente = models.ForeignKey(Cliente, db_column='id_cliente', null=True)
     tipo_movimiento = models.ForeignKey(TipoMovimientoStock, db_column='id_tipo_movimiento')
     estado = models.ForeignKey(EstadoMovimientoStock, db_column='id_estado_movimiento')
+    forma_pago = models.ForeignKey(FormaPago, db_column='id_forma_pago', null=False)
 
     def as_json(self):
         return dict(
@@ -395,10 +420,12 @@ class MovimientoStock(models.Model):
 class MovimientoStockDetalle(models.Model):
     cantidad = models.IntegerField()
     precio_unitario = models.FloatField(null=True)
+    precio_compra = models.FloatField(null=True)
     subtotal = models.FloatField(null=True)
 
     movimiento_stock = models.ForeignKey(MovimientoStock, db_column='id_movimiento_stock')
-    producto = models.ForeignKey(Producto, db_column='id_producto')
+    producto = models.ForeignKey(Producto, db_column='id_producto', null=True)
+    combo = models.ForeignKey(Combo, db_column='id_combo', null=True)
 
     def as_json(self):
         return dict(
@@ -424,28 +451,7 @@ class TipoMovimientoCapital(models.Model):
     def __str__(self):
         return "TipoMovimientoCapital: " + self.nombre
 
-class EstadoFormaPago(models.Model):
-    nombre = models.CharField(max_length=20)
-    descripcion = models.CharField(max_length=50)
 
-    def __str__(self):
-        return "Estado Forma de Pago: " + self.nombre
-
-class FormaPago(models.Model):
-    nombre = models.CharField(max_length=20)
-    descripcion = models.CharField(max_length=50)
-
-    estado = models.ForeignKey(EstadoFormaPago, db_column= 'id_estado')
-
-    def as_json(self):
-        return dict(
-            nombre = self.nombre,
-            descripcion = self.descripcion,
-            estado = self.estado.id
-        )
-
-    def __str__(self):
-        return "Forma de Pago: " + self.nombre
 
 class CaracteristicasFormaPago(models.Model):
     codigo = models.IntegerField(primary_key=True)
@@ -512,6 +518,31 @@ class MovimientoCapital(models.Model):
         else:
             self.codigo = MovimientoCapital.objects.order_by('codigo').last().codigo + 1
         super(MovimientoCapital, self).save()
+
+class EstadoSorteo(models.Model):
+    nombre = models.CharField(max_length=20)
+    descripcion = models.CharField(max_length=60)
+
+class Sorteo(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    fecha_creacion = models.DateTimeField()
+    estado = models.ForeignKey(EstadoSorteo, db_column='id_estado')
+
+    def saveNewSorteo(self):
+        if Sorteo.objects.order_by('codigo').__len__()==0:
+            self.codigo = 1000
+        else:
+            self.codigo = Sorteo.objects.order_by('codigo').last().codigo + 1
+        super(Sorteo, self).save()
+
+class SorteoDetalle(models.Model):
+    producto = models.ForeignKey(Producto,db_column='id_producto')
+    cantidad = models.IntegerField()
+    posicion = models.IntegerField()
+    ganador = models.CharField(max_length= 60, null=True)
+    sorteo = models.ForeignKey(Sorteo, db_column='id_sorteo')
+
 
 class EstadoCaja(models.Model):
     nombre = models.CharField(max_length=20)
