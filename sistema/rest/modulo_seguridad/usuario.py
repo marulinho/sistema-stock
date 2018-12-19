@@ -358,13 +358,12 @@ def iniciar_sesion(request):
             #busco que no tenga sesion activa y si tiene la cierro
             if SesionUsuario.objects.filter(usuario = usuario,
                                             fecha_hora_hasta__isnull = True).__len__()>=1:
-                sesion_usuario = SesionUsuario.objects.get(usuario = usuario, fecha_hora_hasta__isnull = True)
-                sesion_usuario.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
-                sesion_usuario.save()
-            else:
-                sesion_nueva = SesionUsuario(fecha_hora_desde = datetime.datetime.now(pytz.utc),
-                                             usuario = usuario)
-                sesion_nueva.save()
+                sesiones_usuario = SesionUsuario.objects.filter(usuario = usuario, fecha_hora_hasta__isnull = True)
+                for sesion in sesiones_usuario:
+                    sesion.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
+                    sesion.save()
+            sesion_nueva = SesionUsuario(fecha_hora_desde = datetime.datetime.now(pytz.utc),usuario = usuario)
+            sesion_nueva.save()
             response.content = armar_response_content(usuario)
             response.status_code = 200
             return response
@@ -405,9 +404,10 @@ def finalizar_sesion(request):
             # busco sesion activa y la cierro
             if SesionUsuario.objects.filter(usuario=usuario,
                                             fecha_hora_hasta__isnull=True).__len__() >= 1:
-                sesion_usuario = SesionUsuario.objects.get(usuario=usuario,fecha_hora_hasta__isnull=True )
-                sesion_usuario.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
-                sesion_usuario.save()
+                sesion_usuario = SesionUsuario.objects.filter(usuario=usuario,fecha_hora_hasta__isnull=True)
+                for sesion in sesion_usuario:
+                    sesion.fecha_hora_hasta = datetime.datetime.now(pytz.utc)
+                    sesion.save()
             else:
                 raise ValueError(ERROR_DATOS_INCORRECTOS, DETALLE_ERROR_LOGOUT_SIN_LOGIN)
             response.content = armar_response_content(None,DETALLE_ERROR_LOGOUT_EXITOSO)
